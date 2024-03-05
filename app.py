@@ -1,7 +1,12 @@
 from flask import Flask
 from flask import render_template
 
+
 app = Flask(__name__)
+
+@app.route('/pattern/edit')
+def edit():
+  return render_template('edit_pattern.html')
 
 
 @app.route('/')

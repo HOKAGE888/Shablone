@@ -6,11 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ЩАБЛЁН</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
 <body>
     <div>
-        gggggg
+      <button onclick="open_file_dialog()">Добавить файл</button>
+      <input id="file-input" type="file" name="name" style="display: none;"/>
+      <canvas id="pattern"></canvas>
     </div>
 
 </body>
