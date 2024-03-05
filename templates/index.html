@@ -4,15 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>ФОТОЩЁП</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+  <!-- <script src="{{ url_for('static', filename='styles/po.js') }}"></script> -->
+
 </head>
 
 <body>
+
+
   <div class="start-container">
-    <div class="btn create">
-      Создать шаблон
-    </div>
+    
+      <a href="/templates/Pettern-edit.html">
+        <div class="btn create">
+          Создать шаблон
+        </div>
+      </a>
     <div class="btn import">
       Выгрузить данные в шаблон
     </div>
@@ -20,6 +27,51 @@
   <div class="black"></div>
   <div class="shabloni">
     <div class="title">Шаблоны</div>
+
+    <!--МОДАЛЬНОЕ ОКНО
+       <div>
+      <button id="filter" class="btn" onclick="window.myModal.showModal()">Фильтр</button>
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Шапка модального окна</h2>
+          </div>
+          <div class="modal-body">
+            <button>Фильтр</button>
+          </div>
+          <div class="modal-footer">
+            <h3>Футер модального окна</h3>
+          </div>
+        </div> -->
+    <div>
+      <section>
+        <select class="filter">
+          <option>Фильтр</option>
+          <option>Серьги</option>
+          <option>Кольца</option>
+          <option>Браслеты</option>
+          <option>Подвески</option>
+          <option>Шармы</option>
+          <option>Цепи</option>
+          <option>Броши</option>
+          <option>Колье</option>
+          <option>Пирсинг</option>
+          <option>Запонки</option>
+          <option>Сувенирная продукция</option>
+          <option>Брелоки</option>
+          <option>Зажимы для галстука</option>
+          <option>Заколки</option>
+          <option>Часы</option>
+          <option>Столовое серебро</option>
+          <option>Столовые приборы</option>
+          <option>Посуда</option>
+          <option>Погремушки</option>
+        </select>
+      </section>
+
+    </div>
+
     <div class="struct_shablone">
       <div class="shablone ">
   
