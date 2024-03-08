@@ -9,12 +9,17 @@
   <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
-<body>
-    <div>
-      <button onclick="open_file_dialog()">Добавить файл</button>
-      <input id="file-input" type="file" name="name" style="display: none;"/>
-      <canvas id="pattern"></canvas>
+<body bgcolor="#dee2e6">
+    <div class="fone">
+      <div>
+        <button class="panel" onclick="open_file_dialog()">Добавить файл</button>
+        <input id="file-input" type="file" name="name" style="display: none;"/>
+        <canvas id="pattern"></canvas>
+      </div>
+      <hr class="liniya">
     </div>
+
+
 
     
 </body>

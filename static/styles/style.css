@@ -12,6 +12,17 @@
     width: 30px;
 }
 
+.liniya{
+    width: 270px;
+    margin: 15px;
+    margin-top: -150px;
+
+
+
+    
+
+}
+
 .btn {
     background-color: #257ae8;
     width: 20vw;
@@ -74,6 +85,43 @@
 body {
     margin: 0px;
     display: flex;
+}
+
+.fone {
+    height: 100%;
+    width: 300px;
+    position: fixed;
+    z-index: 1;
+    top: 0; 
+    left: 0;
+    background-color: #212529;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.panel{
+    font-family: "Lato", sans-serif;
+    font-family: 'Arial';
+    font-size: 28px;
+    color: #ffffff;
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: 10px 45px;
+    padding: 0;
+}
+
+.panel:hover{
+    background-color: #257ae8;
+    width: 15vw;
+    height: 50px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+    font-size: 28px;
+    font-family: 'Arial';
+    font-size: 28px;
+    margin: 10px 5px;
 }
 
 .title {
