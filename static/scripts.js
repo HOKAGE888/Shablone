@@ -24,6 +24,8 @@ function load_image(e) {
         context.drawImage(image, 0, 0
             , context.canvas.width, context.canvas.height
             );
+        context.font = "48px serif";
+        context.filltext('hello world', 10, 10)
         };
     const reader = new FileReader()
     const file = e.target.files[0];
