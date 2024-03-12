@@ -13,14 +13,15 @@
 }
 
 .liniya{
-    width: 270px;
-    margin: 15px;
-    margin-top: -150px;
+    width: 80%;
+}
 
-
-
+.top-element{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
     
-
+    height: 100px;
 }
 
 .btn {
@@ -88,19 +89,21 @@ body {
 }
 
 .fone {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    width: 300px;
+    width: 400px;
     position: fixed;
-    z-index: 1;
+    z-index: 9999999999;
     top: 0; 
     left: 0;
     background-color: #212529;
     overflow-x: hidden;
     padding-top: 20px;
+
 }
 
 .panel{
-    font-family: "Lato", sans-serif;
     font-family: 'Arial';
     font-size: 28px;
     color: #ffffff;
@@ -108,20 +111,16 @@ body {
     background: none;
     cursor: pointer;
     margin: 10px 45px;
-    padding: 0;
+    padding-bottom: 15px;
+    padding-top: 15px;
+
+    transition: 1s;
+    border: #ffffff00 solid 3px;
 }
 
 .panel:hover{
-    background-color: #257ae8;
-    width: 15vw;
-    height: 50px;
-    border-radius: 20px;
-    color: white;
-    text-align: center;
-    font-size: 28px;
-    font-family: 'Arial';
-    font-size: 28px;
-    margin: 10px 5px;
+    border-top: white;
+    border-bottom: white;
 }
 
 .title {
@@ -152,6 +151,22 @@ body {
     font-size: 18px;
     border: 5px solid #ffffff;
     transition: 1s;
+}
+
+.main-content{
+    width: 100%;
+}
+
+.right-menu{
+    width: 500px;
+    background-color: #212529;
+    height: 100vh;
+    z-index: 99999999999999999;
+}
+
+.flex-vertical{
+    display: flex;
+    justify-content: center;
 }
 
 

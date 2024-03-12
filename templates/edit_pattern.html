@@ -7,20 +7,30 @@
   <title>ЩАБЛЁН</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
   <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+  <script src="{{ url_for('static', filename='edit_template.js') }}"></script>
+
 </head>
 
-<body bgcolor="#dee2e6">
+<body bgcolor="#dee2e6" class="flex-vertical">
     <div class="fone">
-      <div>
+      <div class="top-element">
         <button class="panel" onclick="open_file_dialog()">Добавить файл</button>
         <input id="file-input" type="file" name="name" style="display: none;"/>
-        <canvas id="pattern"></canvas>
+        
+        <hr class="liniya">
       </div>
-      <hr class="liniya">
+      <div class="preview">
+        Посмотреть результат
+      </div>
+        
+      <div class="add-img-template" id="add-img"></div>
+      <div class="add-text-template"id="add-text"></div>
     </div>
+    <div class="main-content" id="main">
+      <!-- <canvas id="pattern"></canvas> -->
+    </div>
+    <div class="right-menu">
 
-
-
-    
+    </div>
 </body>
 </html>
