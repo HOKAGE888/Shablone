@@ -3,14 +3,13 @@ template_pattern = [
         "id": "1",
         "style": {
             "margin-left": "500px",
-            "z-index": "4",
+            "z-index": "1",
             "margin-top": "50px",
             "position": "absolute",
-            "width": "600px",
+            "width": "600px",   
             "height": "800px",
             "background-color": "#ffffff",
         },
-        "value": "shdfksjdhfj"
     },
     {
         "id": "2",
@@ -18,10 +17,26 @@ template_pattern = [
             "z-index": "5",
             "margin-left": "500px",
             "margin-top": "50px",
+            "position": "absolute",
             "width": "200px",
             "height": "300px",
             "background-color": "#ff00ff"
         }
+    },
+    {
+        "id": "2",
+        "style": {
+            "z-index": "5",
+            "margin-left": "600px",
+            "margin-top": "150px",
+            "position": "absolute",
+            "width": "300px",
+            "height": "700px",
+            "background-image": "url('https://fikiwiki.com/uploads/posts/2022-02/1645054787_23-fikiwiki-com-p-kartinki-ikonki-23.png')",
+            "background-color": "transparent",
+            "background-size": "100% 100%"  
+        },
+        // "src": "https://w7.pngwing.com/pngs/922/837/png-transparent-computer-icons-others-angle-text-rectangle.png"
     }
 
 ]
