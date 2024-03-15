@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ЩАБЛЁН</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
   <script src="{{ url_for('static', filename='scripts.js') }}"></script>
   <script src="{{ url_for('static', filename='edit_template.js') }}"></script>
 
@@ -14,14 +15,27 @@
 <body bgcolor="#dee2e6" class="flex-vertical">
     <div class="fone">
       <div class="top-element">
-        <button class="panel" onclick="open_file_dialog()">Добавить файл</button>
-        <input id="file-input" type="file" name="name" style="display: none;"/>
-        
+        <div style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
+          SOKOLOV
+        </div> 
         <hr class="liniya">
       </div>
-      <div class="preview">
-        Посмотреть результат
-      </div>
+
+      <button class="panel" >Настройка шапки</button>
+
+      <button class="panel" >Редактирование холста</button>
+
+      <button class="panel" >Добавить текст</button>
+
+      <button class="panel" onclick="open_file_dialog()">Добавить картинку</button>
+        <input id="file-input" type="file" name="name" style="display: none;"/>
+
+      <button class="preview" >Посмотреть результат</button>
+
+      
+
+      
+
         
       <div class="add-img-template" id="add-img"></div>
       <div class="add-text-template"id="add-text"></div>
