@@ -120,7 +120,10 @@ body {
 .panel:hover{
     border-top: white;
     border-bottom: white;
+    font-size: 20px;
+    color: #ffffff;
 }
+
 
 .preview{
     font-family: 'Montserrat';
@@ -130,13 +133,15 @@ body {
     background: none;
     cursor: pointer;
     text-align: center;
-    /* margin: 10px 45px; */
-    padding-bottom: 15px;
-    padding-top: 15px;
     border: #ffffff00 solid 3px;
+
+    position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100px;
     
 }
-
 
 .title {
     background-color: #257ae8;
