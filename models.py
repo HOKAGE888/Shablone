@@ -1,4 +1,4 @@
-from peewee import SqliteDatabase, Model, TextField, ForeignKeyField
+from peewee import SqliteDatabase, Model, TextField, ForeignKeyField, BlobField
 
 db = SqliteDatabase('db.db')
 
@@ -35,10 +35,13 @@ class Product(Table):
 class Template(Table):
     json = TextField()
     imagemagick = TextField()
-    path_to_background = TextField()
 
 
 class Image(Table):
+    template = ForeignKeyField(Template)
+    content = BlobField()
+
+class DoneImage(Table):
     path = TextField()
     product = ForeignKeyField(Product)
     template = ForeignKeyField(Template)

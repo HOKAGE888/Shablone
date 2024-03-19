@@ -10,14 +10,19 @@
 </head>
 
 <body bgcolor="#dee2e6">
-    <div class="fone">
-      <div>
-        <button class="panel" onclick="open_file_dialog()">Добавить файл</button>
-        <input id="file-input" type="file" name="name" style="display: none;"/>
-      </div>
-      <hr class="liniya">
+  <form id="uploadForm">
+      <input type="file" id="fileInput" name="file">
+      <input type="text" id="templateIdInput" name="template_id" placeholder="Template ID">
+      <button type="button" onclick="uploadFile()">Upload</button>
+  </form>
+  <div class="fone">
+    <div>
+      <button class="panel" onclick="open_file_dialog()">Добавить файл</button>
+      <input id="file-input" type="file" name="name" style="display: none;"/>
     </div>
-    <canvas id="pattern" style="margin-left: 300px; width: 100%;"></canvas>
+    <hr class="liniya">
+  </div>
+  <canvas id="pattern" style="margin-left: 300px; width: 100%;"></canvas>
 
 
 
