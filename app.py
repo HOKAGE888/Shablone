@@ -22,27 +22,33 @@ def hello():
 
 
 
-@app.route('/api/template/', methods=['POST'])
-def generate_template():
-  if not request.json:
-    abort(400)
-  
-  example_json = {
-    'image': 'url изображения, который грузиться сразу после его прикрепления',
-    'annotations': ['+0+20 "Hello World"', '+20+40 "Goodbay World"']
-  }
-  # https://imagemagick.org/script/download.php
-  os.system('magick 1.png -annotate +0+20 "Hello World" 2.png')
-  
-  print('test')
-  return {'status':'done'}, 201
 
 
 # AAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIIIIIII
 
-@app.route('/api/template/<int:template_id>/upload', methods=['POST'])
+@app.route('/api/template', methods=['POST'])
+def generate_template():
+  """Создает шаблон"""
+  template = Template.create()
+  return jsonify({'template_id':template.id}), 200
+
+
+@app.route('/api/template/<int:template_id>', methods=['GET', 'PATCH'])
+def get_template(template_id):
+  
+  template = Template.get_or_none(id=template_id)
+  if template is None:
+    return jsonify({'error': 'Шаблон не найден'}), 400
+  
+  if request.method == 'PATCH':
+    template.json = request.json
+  
+  return template.json, 200
+
+
+@app.route('/api/template/<int:template_id>/image', methods=['POST'])
 def upload_file(template_id):
-    """Апи на загрузку изображения на сервер"""
+    """Загрузить изображения на сервер"""
 
     # Проверка наличия файла в запросе
     if 'file' not in request.files:
@@ -64,17 +70,20 @@ def upload_file(template_id):
 
     return jsonify({'message': 'File uploaded successfully', 'image': image.id}), 200
 
+
 @app.route('/api/image/<int:image_id>', methods=['GET'])
 def get_image(image_id):
   """Отправляет пользователю изображение"""
-  try:
-      image = Image.get_by_id(image_id)
-      with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        temp_file.write(image.content)
-        # Отправляем временный файл в качестве ответа
-      return send_file(temp_file.name, mimetype='image/png', as_attachment=False)
-  except Image.DoesNotExist:
-      return jsonify({'error': 'Image not found'}), 404
+  image = Image.get_or_none(id=image_id)
+  if image is None:
+    return jsonify({'error': 'Image not found'}), 404
+  
+  with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+    temp_file.write(image.content)
+  
+  # Отправляем временный файл в качестве ответа
+  return send_file(temp_file.name, mimetype='image/png', as_attachment=False)
+
 
 if __name__ == '__main__':
   app.run(debug=True)

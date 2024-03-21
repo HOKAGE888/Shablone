@@ -33,12 +33,11 @@ class Product(Table):
 
 
 class Template(Table):
-    json = TextField()
-    imagemagick = TextField()
+    json = TextField(null=True)
+    imagemagick = TextField(null=True)
 
 
 class Image(Table):
-    template = ForeignKeyField(Template)
     content = BlobField()
 
 class DoneImage(Table):
