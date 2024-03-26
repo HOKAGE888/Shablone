@@ -30,7 +30,7 @@ function uploadFile() {
     formData.append('template_id', templateId);
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/template/' + templateId + '/upload', true);
+    xhr.open('POST', '/api/template/' + templateId + '/image', true);
 
     xhr.onload = function() {
         if (xhr.status === 200) {

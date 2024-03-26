@@ -14,24 +14,26 @@
 ```json
 { 
   "template_id": 1,
+  "width": "200px",
+  "height": "200px",
   "images": [
     {
-      "image_id": 1,
+      "id": 1,
       "url": "/api/image/1",
       "z-index": "3",
-      "width": "80px",
-      "height": "35px",
+      "width": "100px",
+      "height": "100px",
       "margin-top": "0px",
       "margin-left": "0px"
     },
     {
-      "image_id": 2,
+      "id": 2,
       "url": "/api/image/2",
       "z-index": "4",
-      "width": "100px",
-      "height": "35px",
-      "margin-top": "10px",
-      "margin-left": "10px"
+      "width": "50px",
+      "height": "60px",
+      "margin-top": "70px",
+      "margin-left": "80px"
     }
   ],  
   "annotations":[
@@ -69,19 +71,23 @@
 ```json
 { 
   "template_id": 1,
+  "width": "100px",
+  "height": "35px",
   "images": [
     {
+      "id": 1,
       "url": "/api/image/1",
       "z-index": "3",
-      "width": "80px",
+      "width": "100px",
       "height": "35px",
       "margin-top": "0px",
       "margin-left": "0px"
     },
     {
+      "id": 2,
       "url": "/api/image/2",
       "z-index": "4",
-      "width": "100px",
+      "width": "80px",
       "height": "35px",
       "margin-top": "10px",
       "margin-left": "10px"
