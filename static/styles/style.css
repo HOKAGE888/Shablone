@@ -184,13 +184,66 @@ body {
     z-index: 99999999999999999;
 }
 
-.flex-vertical {
+/* .flex-vertical {
     display: flex;
     justify-content: center;
-}
+} */
 
 .for-js-background {
     position: 0px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  .text-field__input {
+
+    display: inline-block;
+    width: 50%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-family: 'Montserrat';
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #bdbdbd;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+
+.text-right-menu{
+    font-family: Montserrat, Helvetica, sans-serif; 
+    font-size: 18px; 
+    color: #ffffff; 
+    text-align: center;
+}
+
+.right-text{
+    font-family: Montserrat, Helvetica, sans-serif; 
+    font-size: 20px; 
+    color: #ffffff; 
+    text-align: center; margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.cr{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+.cr::-webkit-color-swatch{
+    border-radius: 50%;
 }
 
 
