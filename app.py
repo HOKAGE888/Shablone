@@ -33,10 +33,10 @@ def generate_image(template: Template):
 
 
   params: dict = json.loads(template.json)
-  cmd = f'convert -size {params["width"].replace("px","")}x{params["height"].replace("px","")} xc:none '
+  cmd = f'magick -size {params["width"].replace("px","")}x{params["height"].replace("px","")} xc:none '
 
-  for img in params['images']:
-    image: Image = Image.get_by_id(img['id'])
+  for annotate in params['images']:
+    image: Image = Image.get_by_id(annotate['id'])
     
     img_name = f'{image.id}.png'
     with open(os.path.join(path, img_name), 'bw') as f:
@@ -44,29 +44,44 @@ def generate_image(template: Template):
 
     cmd += '-draw "image over '
 
-    if "margin-left" in img and "margin-top" in img:
-      cmd += f'{img["margin-left"].replace("px","")},{img["margin-top"].replace("px","")} '
+    if "margin-left" in annotate and "margin-top" in annotate:
+      cmd += f'{annotate["margin-left"].replace("px","")},{annotate["margin-top"].replace("px","")} '
 
-    if "width" in img and "height" in img:
-      cmd += f'{img["width"].replace("px","")},{img["height"].replace("px","")} '
+    if "width" in annotate and "height" in annotate:
+      cmd += f'{annotate["width"].replace("px","")},{annotate["height"].replace("px","")} '
 
-    cmd += f'\'{os.path.join(os.getcwd(), path, img_name)}\'" '
+    p = os.path.join(os.getcwd(), path, img_name).replace("\\", "\\\\")
+    cmd += f'\'{p}\'" '
 
+
+  for annotate in params['annotations']:
+    cmd += '-annotate '
+
+    if "width" in annotate and "height" in annotate:
+      cmd += f'+{annotate["width"].replace("px","")}+{annotate["height"].replace("px","")} '
+
+    cmd += f'"{annotate["text"]}" '
+
+    # image: Image = Image.get_by_id(annotate['id'])
+    
+    # img_name = f'{image.id}.png'
+    # with open(os.path.join(path, img_name), 'bw') as f:
+    #   f.write(image.content)
+
+    # cmd += '-draw "image over '
+
+    # if "margin-left" in annotate and "margin-top" in annotate:
+    #   cmd += f'{annotate["margin-left"].replace("px","")},{annotate["margin-top"].replace("px","")} '
+
+
+    # cmd += f'\'{os.path.join(os.getcwd(), path, img_name)}\'" '
 
   cmd += 'result.png'
   template.imagemagick = cmd
   template.save()
 
-  print(cmd)
-
-
-
-    
-generate_image(Template.get_by_id(1))
-
-# generate_image(Template.get_or_create()[0])
-
 # AAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIIIIIII
+
 
 @app.route('/api/template', methods=['POST'])
 def generate_template():
@@ -84,11 +99,26 @@ def get_template(template_id):
   
   if request.method == 'PATCH':
     template.json = request.json
+    template.imagemagick = None
   
   return template.json, 200
 
+@app.route('/api/template/<int:template_id>/image', methods=['GET'])
+def get_template_image(template_id):
+  
+  template = Template.get_or_none(id=template_id)
+  if template is None:
+    return jsonify({'error': 'Шаблон не найден'}), 400
 
-@app.route('/api/template/<int:template_id>/image', methods=['POST'])
+  if template.imagemagick is None:
+    generate_image(template_id)
+
+  file_path = os.path.join(os.getcwd(), 'projects', f'{template_id}', 'result.png')
+
+  return send_file(file_path, mimetype='image/png', as_attachment=False)
+
+
+@app.route('/api/image', methods=['POST'])
 def upload_file(template_id):
     """Загрузить изображения на сервер"""
 
