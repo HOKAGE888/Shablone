@@ -27,9 +27,20 @@
 
         <button id="add-text" class="panel" >Добавить текст</button>
 
-        <button class="panel" onclick="open_file_dialog()">Добавить картинку</button>
-        <input id="file-input" type="file" name="name" style="display: none;"/>
+        <button class="panel" id="add-img"
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        >Добавить картинку</button>
+        <!-- <input id="file-input" type="file" name="name" style="display: none;"/> -->
 
+        <!-- onclick="open_file_dialog()" -->
 
       <div class="preview">
         <hr style="width: 80%">
@@ -37,9 +48,9 @@
       </div>
       
       
-        
+<!--         
       <div class="add-img-template" id="add-img"></div>
-      <div class="add-text-template"id="add-text"></div>
+      <div class="add-text-template"id="add-text"></div> -->
     </div>
     <div class="main-content" id="main">
       <!-- <canvas id="pattern"></canvas> -->
@@ -51,18 +62,18 @@
       </div>
       <div class="text-right-menu">
         Высота:
-        <input class="text-field__input" type="text" name="text" placeholder="Высота" ><br>
+        <input class="text-field__input" id="height" type="text" name="text" placeholder="Высота" ><br>
         Ширина:
-        <input class="text-field__input" type="text" name="text" placeholder="Ширина" >
+        <input class="text-field__input" id="width" type="text" name="text" placeholder="Ширина" >
       </div>
       <div class="right-text">
         Отступ по вертикали
       </div>
       <div class="text-right-menu">
         Отступ сверху:
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ сверху" >
+        <input class="text-field__input" id="margin-top" type="text" name="text" placeholder="Отступ сверху" >
         Отступ снизу:
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ снизу" >
+        <input class="text-field__input" id="bottom-x" type="text" name="text" placeholder="Отступ снизу" >
       </div>
 
       <div class="right-text">
@@ -71,15 +82,15 @@
 
       <div class="text-right-menu">
         Отступ слева:
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ слева" ><br>
+        <input class="text-field__input" id="margin-left" type="text" name="text" placeholder="Отступ слева" ><br>
         Отступ справа:
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ справа" >
+        <input class="text-field__input" id="right-y" type="text" name="text" placeholder="Отступ справа" >
       </div>
 
 
       <div class="right-text">
         Цвет фона
-        <input class="cr" type="color">
+        <input class="cr" type="color" id="background-color">
       </div>
       
 
