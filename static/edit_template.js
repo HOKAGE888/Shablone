@@ -54,6 +54,7 @@ function set_template_settings(id){
             break
         }
     }
+    console.log(need_element["style"])
     for (const [key, value] of Object.entries(need_element["style"])) {
         current_parametr = document.getElementById(key)
         if (current_parametr != null){
@@ -79,7 +80,6 @@ function update_view() {
         if (element["content"] != null) {
             innerElement += `${element["content"]}</${element["tag"]}>`
         }
-        console.log(innerElement)
         main.innerHTML += innerElement
     });
 }
@@ -95,14 +95,28 @@ window.onload = function () {
     document.getElementById("add-img").addEventListener('click', function () {
         add_element("img")
     })
+
+    document.querySelectorAll("input").forEach(element =>{
+        // update_parametr(current_id, )
+        element.addEventListener("input", function () {
+            update_parametr(current_id, element.id, element.value)
+        })
+    })
+
+
 }
 
 function add_element(type){
     id += 1
     new_elemetn = {...default_template[type]}
     new_elemetn["id"] = String(id)
-    console.log(template_pattern)
     template_pattern.push(new_elemetn)
+    update_view()
+    set_template_settings(id)
+}
+
+function update_parametr(id, parametr_name, value){
+    template_pattern[Number(id)]["style"][parametr_name] = value
     update_view()
     set_template_settings(id)
 }
