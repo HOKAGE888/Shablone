@@ -83,6 +83,11 @@ def generate_image(template: Template):
   template.save()
 
 
+@app.route('/move')
+def get_move():
+  return render_template('move_text_in_canvas.html')
+
+
 @app.route('/create')
 def get_create_temlate():
   return render_template('create_template.html')
