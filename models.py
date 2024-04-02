@@ -35,15 +35,14 @@ class Product(Table):
 class Template(Table):
     json = TextField(null=True)
     imagemagick = TextField(null=True)
+    brand = ForeignKeyField(Brand)
+    metal_type = ForeignKeyField(MetalType)
+    product_subtype = ForeignKeyField(ProductSubtype)
+
 
 
 class Image(Table):
     content = BlobField()
-
-class DoneImage(Table):
-    path = TextField()
-    product = ForeignKeyField(Product)
-    template = ForeignKeyField(Template)
 
 
 db.connect()

@@ -1,11 +1,13 @@
 from flask import Flask, request, render_template, abort, jsonify, send_file
-from models import Template, Image
+from models import Brand, ProductSubtype, ProductType, Template, Image, MetalType
 import os
 import tempfile
 import json
+from flask import json
 
-
+json.provider.DefaultJSONProvider.ensure_ascii = False
 app = Flask(__name__)
+
 
 @app.route('/template/<int:template_id>')
 def upload(template_id):
@@ -80,8 +82,61 @@ def generate_image(template: Template):
   template.imagemagick = cmd
   template.save()
 
+
+@app.route('/create')
+def get_create_temlate():
+  return render_template('create_template.html')
+
 # AAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIIIIIII
 
+
+
+
+@app.route('/api/productsubtype', methods=['GET'])
+def get_product_subtypes():
+  product_subtypes = ProductSubtype.filter()
+  result = {'count':product_subtypes.count(), 'entities':[]}
+  for item in product_subtypes:
+    result['entities'].append({
+      'id':item.id,
+      'name':item.name,
+      'producttype_id':item.product_type.id
+    })
+  return jsonify(result)
+
+@app.route('/api/producttype', methods=['GET'])
+def get_product_types():
+  product_types = ProductType.filter()
+  result = {'count':product_types.count(), 'entities':[]}
+  for item in product_types:
+    result['entities'].append({
+      'id':item.id,
+      'name':item.name
+    })
+  return jsonify(result)
+
+
+@app.route('/api/brand', methods=['GET'])
+def get_brands():
+  brands = Brand.filter()
+  result = {'count':brands.count(), 'entities':[]}
+  for item in brands:
+    result['entities'].append({
+      'id':item.id,
+      'name':item.name
+    })
+  return jsonify(result)
+
+@app.route('/api/metaltype', methods=['GET'])
+def get_metaltypes():
+  metal_types = MetalType.filter()
+  result = {'count':metal_types.count(), 'entities':[]}
+  for item in metal_types:
+    result['entities'].append({
+      'id':item.id,
+      'name':item.name
+    })
+  return jsonify(result)
 
 @app.route('/api/template', methods=['POST'])
 def generate_template():
