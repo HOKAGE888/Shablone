@@ -46,17 +46,8 @@ default_template = {
 current_id = 0
 
 function set_template_settings(id){
-    need_element = {}
-    console.log("Start search")
-    for (let index = 0; index < template_pattern.length; index++) {
-        if (template_pattern[index]["id"] == String(id)){
-            need_element = template_pattern[index]
-            console.log("searching is true")
-            break
-        }
-    }
-    console.log(need_element)
-    console.log(need_element == {})
+    current_id = id
+    need_element = search_by_id(id)
     if (need_element == {}) {
         console.log("error search")
         return
@@ -105,13 +96,10 @@ window.onload = function () {
     })
 
     document.querySelectorAll("input").forEach(element =>{
-        // update_parametr(current_id, )
         element.addEventListener("input", function () {
             update_parametr(current_id, element.id, element.value)
         })
     })
-
-
 }
 
 function add_element(type){
@@ -124,7 +112,17 @@ function add_element(type){
 }
 
 function update_parametr(id, parametr_name, value){
-    template_pattern[Number(id)]["style"][parametr_name] = value
+    search_by_id(id)["style"][parametr_name] = value
     update_view()
     set_template_settings(id)
+}
+
+function search_by_id(id){
+    for (let index = 0; index < template_pattern.length; index++) {
+        if (template_pattern[index]["id"] == String(id)){
+            console.log("searching is true")
+            return template_pattern[index]
+        }
+    }
+    throw Error("Pizda, element ne nayden")
 }
