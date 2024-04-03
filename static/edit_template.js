@@ -49,11 +49,19 @@ function set_template_settings(id){
     need_element = {}
     console.log("Start search")
     for (let index = 0; index < template_pattern.length; index++) {
-        if (template_pattern[index]["id"] == id){
+        if (template_pattern[index]["id"] == String(id)){
             need_element = template_pattern[index]
+            console.log("searching is true")
             break
         }
     }
+    console.log(need_element)
+    console.log(need_element == {})
+    if (need_element == {}) {
+        console.log("error search")
+        return
+    }
+    
     console.log(need_element["style"])
     for (const [key, value] of Object.entries(need_element["style"])) {
         current_parametr = document.getElementById(key)
