@@ -14,13 +14,6 @@
 
 
   <div class="start-container">
-    
-      <!-- <a href="pattern/edit">
-        <button class="btn create">
-          Создать шаблон
-        </button>
-      </a> -->
-
     <button class="btn create" id="openModalBtn">
       Создать шаблон
     </button>
@@ -57,7 +50,6 @@
           <option>Погремушки</option>
         </select>
       </section>
-
     </div>
 
     <div class="struct_shablone">
@@ -128,14 +120,18 @@
 <!-- Модальное окно -->
 <div id="myModal" class="modal">
   <div class="modal-content">
-    <h2>Параметры создания</h2>
+    <h1 style=" color: rgb(0, 0, 0); font-weight: bold; font-family: 'Arial'; font-size: 28px; text-align: center; padding: 1px;">Параметры создания</h1>
     <!-- Выпадающие списки, которые будут заполняться данными через API -->
-    <select id="brand"></select><br>
-    <select id="select2"></select><br>
-    <select id="select3"></select><br>
-    <select id="select4"></select><br>
+    <h2 class="text_modal">Бренд</h2>
+    <select class="filter" id="brand"></select>
+    <h2 class="text_modal">Тип изделия</h2>
+    <select class="filter" id="select2"></select>
+    <h2 class="text_modal">Подтип изделия</h2>
+    <select class="filter" id="select3"></select>
+    <h2 class="text_modal">Тип металла</h2>
+    <select class="filter" id="select4"></select><br>
     <button id="closeModalBtn" class="btn_modal">Закрыть</button>
-    <a href="pattern/edit"><button class="btn_modal">Создать</button></a>
+    <a href="pattern/edit"><button class="btn_modal" style="float: right;">Создать</button></a>
   </div>
 </div>
 
