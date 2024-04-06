@@ -1,4 +1,22 @@
-template_pattern = []
+template_pattern = [
+    {
+        "id": "0",
+        "style": {
+            "z-index": "4",
+            "background-color": "#fff",
+            "width": "1000px",
+            "height": "800px",
+            "margin-top": "0px",
+            "margin-left": "0px",
+            "position": "absolute",
+        },
+        "const": {
+            "margin-top": `${(document.documentElement.scrollHeight-800) / 2}px`,
+            "margin-left": `${(document.documentElement.scrollWidth-1000) / 2}px`,
+        },
+        "tag": "background",
+    }
+]
 
 default_template = {
     "text": {
@@ -85,6 +103,7 @@ function update_view() {
 
 
 id = 0
+scale = 1
 window.onload = function () {
     update_view()
     document.getElementById("add-text").addEventListener('click', function () {
@@ -93,6 +112,15 @@ window.onload = function () {
 
     document.getElementById("add-img").addEventListener('click', function () {
         add_element("img")
+    })
+
+    document.addEventListener("mousewheel", function (e) {
+        if (e.deltaY> 0) {
+            scale += 0.1
+        } else {
+            scale -= 0.1
+        }
+        document.querySelectorAll(".main-content")[0].style = `transform: scale(${scale});`
     })
 
     document.querySelectorAll("input").forEach(element =>{
@@ -106,6 +134,9 @@ function add_element(type){
     id += 1
     new_elemetn = {...default_template[type]}
     new_elemetn["id"] = String(id)
+    for (const [key, value] of Object.entries(new_elemetn["const"])) {
+        new_elemetn["const"][key] = template_pattern[0]["const"][key]
+    }
     template_pattern.push(new_elemetn)
     update_view()
     set_template_settings(id)
