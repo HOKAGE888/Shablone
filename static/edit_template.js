@@ -133,6 +133,14 @@ window.onload = function () {
 function add_element(type){
     id += 1
     new_elemetn = {...default_template[type]}
+    // new_elemetn = {}
+    // for (const [key, value] of Object.entries(default_template[type])) {
+    //     new_elemetn[key] = value
+    // }
+
+    // Object.assign(new_elemetn, default_template[type]);
+
+
     new_elemetn["id"] = String(id)
     for (const [key, value] of Object.entries(new_elemetn["const"])) {
         new_elemetn["const"][key] = template_pattern[0]["const"][key]
@@ -151,7 +159,7 @@ function update_parametr(id, parametr_name, value){
 function search_by_id(id){
     for (let index = 0; index < template_pattern.length; index++) {
         if (template_pattern[index]["id"] == String(id)){
-            console.log("searching is true")
+            console.log(template_pattern[index]===template_pattern[index])
             return template_pattern[index]
         }
     }
