@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas с текстом, который можно перетаскивать</title>
+<style>
+    #canvas-container {
+        position: relative;
+    }
+    #canvas {
+        border: 1px solid #000;
+    }
+</style>
+</head>
+<body>
+<div id="canvas-container">
+    <canvas id="canvas" width="800" height="600"></canvas>
+</div>
+
+<script>
+    // Получаем ссылку на canvas и контекст рисования
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Функция для отрисовки текста на canvas
+    function drawText(text, x, y) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText(text, x, y);
+    }
+
+    // Функция для получения координат мыши в canvas
+    function getCanvasMousePosition(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    }
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    // Обработчик события для начала перетаскивания
+    canvas.addEventListener('mousedown', (event) => {
+        const { x, y } = getCanvasMousePosition(event);
+        offsetX = x;
+        offsetY = y;
+        isDragging = true;
+    });
+
+    // Обработчик события для конца перетаскивания
+    canvas.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Обработчик события для перетаскивания текста
+    canvas.addEventListener('mousemove', (event) => {
+        if (isDragging) {
+            const { x, y } = getCanvasMousePosition(event);
+            drawText('Перетаскиваемый текст', x - offsetX, y - offsetY);
+        }
+    });
+
+    // Инициализация стиля текста
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
+
+    // Начальная отрисовка текста
+    drawText('Перетаскиваемый текст', 50, 50);
+</script>
+</body>
+</html>

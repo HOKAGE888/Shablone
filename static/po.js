@@ -1,25 +1,32 @@
 // МОДАЛЬНОЕ ОКНО
-// window.onload = function () {
-//     var modal = document.getElementById('myModal');
 
-//     var btn = document.getElementById("filter");
+// Код для обработки нажатия на кнопку открытия модального окна
+document.getElementById('openModalBtn').addEventListener('click', function() {
+    document.getElementById('myModal').style.display = 'block';
+});
 
-//     var span = document.getElementsByClassName("close")[0];
 
-//     btn.onclick = function () {
-//         modal.style.display = "block";
-//     }
+// Функция для загрузки данных JSON из API
+function fetchData(url, callback) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => callback(data))
+        .catch(error => console.error('Ошибка загрузки данных:', error));
+}
 
-//     span.onclick = function () {
-//         modal.style.display = "none";
-//     }
-
-//     window.onclick = function (event) {
-//         if (event.target == modal) {
-//             modal.style.display = "none";
-//         }
-//     }
-// };
+// Функция для заполнения выпадающего списка
+function populateDropdown(jsonData) {
+    const dropdown = document.getElementById('brand');
+    // Очистка списка перед добавлением новых элементов
+    dropdown.innerHTML = '';
+    // Добавление элементов из JSON в список
+    jsonData.entities.forEach(entity => {
+        const option = document.createElement('option');
+        option.value = entity.id;
+        option.textContent = entity.name;
+        dropdown.appendChild(option);
+    });
+}
 
 
 window.onload = function () {

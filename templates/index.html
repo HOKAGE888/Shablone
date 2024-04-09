@@ -14,12 +14,11 @@
 
 
   <div class="start-container">
-    
-      <!-- <a href="pattern/edit"> -->
-        <button id="create" class="btn create">
-          Создать шаблон
-        </button>
-      <!-- </a> -->
+
+    <button class="btn create" id="openModalBtn">
+      Создать шаблон
+    </button>
+
     <button class="btn import">
       Выгрузить данные в шаблон
     </button>
@@ -27,23 +26,7 @@
   <div class="black"></div>
   <div class="shabloni">
     <div class="title">Шаблоны</div>
-
-    <!--МОДАЛЬНОЕ ОКНО
-       <div>
-      <button id="filter" class="btn" onclick="window.myModal.showModal()">Фильтр</button>
-      <div id="myModal" class="modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Шапка модального окна</h2>
-          </div>
-          <div class="modal-body">
-            <button>Фильтр</button>
-          </div>
-          <div class="modal-footer">
-            <h3>Футер модального окна</h3>
-          </div>
-        </div> -->
+        
     <div>
       <section>
         <select class="filter">
@@ -69,7 +52,6 @@
           <option>Погремушки</option>
         </select>
       </section>
-
     </div>
 
     <div class="struct_shablone">
@@ -137,7 +119,69 @@
     </div>
   </div>
   
+<!-- Модальное окно -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <h1 style=" color: rgb(0, 0, 0); font-weight: bold; font-family: 'Arial'; font-size: 28px; text-align: center; padding: 1px;">Параметры создания</h1>
+    <!-- Выпадающие списки, которые будут заполняться данными через API -->
+    <h2 class="text_modal">Бренд</h2>
+    <select class="filter" id="brand"></select>
+    <h2 class="text_modal">Тип изделия</h2>
+    <select class="filter" id="select2"></select>
+    <h2 class="text_modal">Подтип изделия</h2>
+    <select class="filter" id="select3"></select>
+    <h2 class="text_modal">Тип металла</h2>
+    <select class="filter" id="select4"></select><br>
+    <button id="closeModalBtn" class="btn_modal">Закрыть</button>
+    <a href="pattern/edit"><button class="btn_modal" style="float: right;">Создать</button></a>
+  </div>
+</div>
+
+<script>
+  // Код для обработки нажатия на кнопку открытия модального окна
+  document.getElementById('openModalBtn').addEventListener('click', function() {
+      document.getElementById('myModal').style.display = 'block';
+  });
   
+  
+  // Функция для загрузки данных JSON из API
+  function fetchData(url, callback) {
+      fetch(url)
+          .then(response => response.json())
+          .then(data => callback(data))
+          .catch(error => console.error('Ошибка загрузки данных:', error));
+  }
+  
+  // Функция для заполнения выпадающего списка
+  function populateDropdown(jsonData) {
+      const dropdown = document.getElementById('brand');
+      // Очистка списка перед добавлением новых элементов
+      dropdown.innerHTML = '';
+      // Добавление элементов из JSON в список
+      jsonData.entities.forEach(entity => {
+          const option = document.createElement('option');
+          option.value = entity.id;
+          option.textContent = entity.name;
+          dropdown.appendChild(option);
+      });
+  }
+  
+  // URL API
+  const apiUrl = 'http://127.0.0.1:5000/api/brand';
+  
+  // Вызов функции загрузки данных и заполнения списка при загрузке страницы
+  window.addEventListener('load', () => {
+      fetchData(apiUrl, populateDropdown);
+  });
+  
+  
+  // Код для обработки нажатия на кнопку закрытия модального окна
+  document.getElementById('closeModalBtn').addEventListener('click', function() {
+      document.getElementById('myModal').style.display = 'none';
+  });
+  </script>
+  
+
 </body>
 
 </html>
