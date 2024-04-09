@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas с возможностью добавления текста и изображений</title>
+<style>
+    #canvas-container {
+        position: relative;
+        border: 1px solid #ccc;
+    }
+    #canvas {
+        border: 1px solid #000;
+    }
+</style>
+</head>
+<body>
+<div>
+    <button onclick="addText()">Добавить текст</button>
+    <input type="file" id="file-input" accept="image/*">
+</div>
+<div id="canvas-container">
+    <canvas id="canvas" width="800" height="600"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let textObjects = [];
+    let draggingText = false;
+    let selectedTextIndex = -1;
+    let dragOffsetX, dragOffsetY;
+
+    function drawTextObjects() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        textObjects.forEach((textObj, index) => {
+            ctx.fillStyle = textObj.color;
+            ctx.font = `${textObj.fontSize}px Arial`;
+            ctx.fillText(textObj.text, textObj.x, textObj.y);
+            if (index === selectedTextIndex) {
+                ctx.strokeStyle = 'blue';
+                ctx.strokeRect(textObj.x - 5, textObj.y - textObj.fontSize, ctx.measureText(textObj.text).width + 10, textObj.fontSize + 5);
+            }
+        });
+    }
+
+    function addText() {
+        const defaultText = "Новый текст";
+        const defaultFontSize = 24;
+        const defaultColor = 'black';
+        const textObj = {
+            text: defaultText,
+            fontSize: defaultFontSize,
+            color: defaultColor,
+            x: 50,
+            y: 50
+        };
+        textObjects.push(textObj);
+        drawTextObjects();
+    }
+
+    canvas.addEventListener('mousedown', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        draggingText = false;
+        selectedTextIndex = -1;
+        textObjects.forEach((textObj, index) => {
+            const textWidth = ctx.measureText(textObj.text).width;
+            if (mouseX >= textObj.x && mouseX <= textObj.x + textWidth && mouseY >= textObj.y - textObj.fontSize && mouseY <= textObj.y) {
+                draggingText = true;
+                selectedTextIndex = index;
+                dragOffsetX = mouseX - textObj.x;
+                dragOffsetY = mouseY - textObj.y;
+            }
+        });
+        drawTextObjects();
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+        if (draggingText) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            const textObj = textObjects[selectedTextIndex];
+            textObj.x = mouseX - dragOffsetX;
+            textObj.y = mouseY - dragOffsetY;
+            drawTextObjects();
+        }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+        draggingText = false;
+        drawTextObjects();
+    });
+
+    canvas.addEventListener('dblclick', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        textObjects.forEach((textObj, index) => {
+            const textWidth = ctx.measureText(textObj.text).width;
+            if (mouseX >= textObj.x && mouseX <= textObj.x + textWidth && mouseY >= textObj.y - textObj.fontSize && mouseY <= textObj.y) {
+                const newText = prompt("Введите новый текст", textObj.text);
+                if (newText !== null) {
+                    textObj.text = newText;
+                    drawTextObjects();
+                }
+            }
+        });
+    });
+
+    document.getElementById('file-input').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const image = new Image();
+            image.onload = function() {
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            };
+            image.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+</body>
+</html>
