@@ -3,40 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canvas с возможностью добавления текста и изображений</title>
+<title>Canvas Editor</title>
 <style>
     #canvas-container {
         position: relative;
-        border: 1px solid #ccc;
+        float: left;
+        margin-right: 20px;
     }
     #canvas {
         border: 1px solid #000;
+        cursor: pointer;
+    }
+    .panel {
+        float: left;
+        margin-bottom: 10px;
+    }
+    .panel input[type="text"],
+    .panel input[type="number"],
+    .panel select {
+        margin-bottom: 5px;
     }
 </style>
 </head>
 <body>
-<div>
-    <button onclick="addText()">Добавить текст</button>
-    <input type="file" id="file-input" accept="image/*">
+<div class="panel">
+    <button id="configure-canvas-btn">Настроить холст</button>
+    <div id="canvas-config" style="display: none;">
+        <label for="canvas-width">Ширина:</label><br>
+        <input type="number" id="canvas-width"><br>
+        <label for="canvas-height">Высота:</label><br>
+        <input type="number" id="canvas-height"><br>
+        <label for="canvas-color">Цвет фона:</label><br>
+        <input type="color" id="canvas-color"><br>
+    </div>
+</div>
+<div class="panel">
+    <button id="add-text-btn">Добавить текст</button>
+    <div id="text-properties" style="display: none;">
+        <label for="text">Текст:</label><br>
+        <input type="text" id="text"><br>
+        <label for="text-x">X:</label><br>
+        <input type="number" id="text-x"><br>
+        <label for="text-y">Y:</label><br>
+        <input type="number" id="text-y"><br>
+        <label for="font-size">Размер шрифта:</label><br>
+        <input type="number" id="font-size"><br>
+        <label for="font-weight">Жирность:</label><br>
+        <button id="bold-btn">Жирный</button>
+    </div>
 </div>
 <div id="canvas-container">
-    <canvas id="canvas" width="800" height="600"></canvas>
+    <canvas id="canvas"></canvas>
 </div>
 
 <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-
-    let textObjects = [];
-    let draggingText = false;
+    let dragging = false;
+    let dragStartX, dragStartY;
     let selectedTextIndex = -1;
-    let dragOffsetX, dragOffsetY;
+    let bold = false;
+
+    document.getElementById('configure-canvas-btn').addEventListener('click', () => {
+        document.getElementById('canvas-config').style.display = 'block';
+    });
+
+    document.getElementById('canvas-width').addEventListener('input', () => {
+        canvas.width = parseInt(document.getElementById('canvas-width').value);
+    });
+
+    document.getElementById('canvas-height').addEventListener('input', () => {
+        canvas.height = parseInt(document.getElementById('canvas-height').value);
+    });
+
+    document.getElementById('canvas-color').addEventListener('input', () => {
+        canvas.style.backgroundColor = document.getElementById('canvas-color').value;
+    });
+
+    document.getElementById('add-text-btn').addEventListener('click', () => {
+        document.getElementById('text-properties').style.display = 'block';
+    });
+
+    canvas.addEventListener('mousedown', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        selectedTextIndex = textObjects.findIndex(obj => {
+            const textWidth = ctx.measureText(obj.text).width;
+            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+        });
+        if (selectedTextIndex !== -1) {
+            dragging = true;
+            dragStartX = mouseX;
+            dragStartY = mouseY;
+        }
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+        if (dragging) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            const deltaX = mouseX - dragStartX;
+            const deltaY = mouseY - dragStartY;
+            textObjects[selectedTextIndex].x += deltaX;
+            textObjects[selectedTextIndex].y += deltaY;
+            dragStartX = mouseX;
+            dragStartY = mouseY;
+            drawTextObjects();
+        }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+        dragging = false;
+    });
+
+    document.getElementById('text').addEventListener('input', (event) => {
+        if (selectedTextIndex !== -1) {
+            textObjects[selectedTextIndex].text = event.target.value;
+            drawTextObjects();
+        }
+    });
+
+    document.getElementById('text-x').addEventListener('input', (event) => {
+        if (selectedTextIndex !== -1) {
+            const newX = parseInt(event.target.value);
+            if (!isNaN(newX)) {
+                textObjects[selectedTextIndex].x = newX;
+                drawTextObjects();
+            }
+        }
+    });
+
+    document.getElementById('text-y').addEventListener('input', (event) => {
+        if (selectedTextIndex !== -1) {
+            const newY = parseInt(event.target.value);
+            if (!isNaN(newY)) {
+                textObjects[selectedTextIndex].y = newY;
+                drawTextObjects();
+            }
+        }
+    });
+
+    document.getElementById('font-size').addEventListener('input', (event) => {
+        if (selectedTextIndex !== -1) {
+            const newFontSize = parseInt(event.target.value);
+            if (!isNaN(newFontSize)) {
+                textObjects[selectedTextIndex].fontSize = newFontSize;
+                drawTextObjects();
+            }
+        }
+    });
+
+    document.getElementById('bold-btn').addEventListener('click', () => {
+        if (selectedTextIndex !== -1) {
+            bold = !bold;
+            textObjects[selectedTextIndex].fontWeight = bold ? 'bold' : 'normal';
+            drawTextObjects();
+        }
+    });
+
+    const textObjects = [];
 
     function drawTextObjects() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         textObjects.forEach((textObj, index) => {
             ctx.fillStyle = textObj.color;
-            ctx.font = `${textObj.fontSize}px Arial`;
+            ctx.font = `${textObj.fontWeight} ${textObj.fontSize}px Arial`;
             ctx.fillText(textObj.text, textObj.x, textObj.y);
             if (index === selectedTextIndex) {
                 ctx.strokeStyle = 'blue';
@@ -44,82 +175,6 @@
             }
         });
     }
-
-    function addText() {
-        const defaultText = "Новый текст";
-        const defaultFontSize = 24;
-        const defaultColor = 'black';
-        const textObj = {
-            text: defaultText,
-            fontSize: defaultFontSize,
-            color: defaultColor,
-            x: 50,
-            y: 50
-        };
-        textObjects.push(textObj);
-        drawTextObjects();
-    }
-
-    canvas.addEventListener('mousedown', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        draggingText = false;
-        selectedTextIndex = -1;
-        textObjects.forEach((textObj, index) => {
-            const textWidth = ctx.measureText(textObj.text).width;
-            if (mouseX >= textObj.x && mouseX <= textObj.x + textWidth && mouseY >= textObj.y - textObj.fontSize && mouseY <= textObj.y) {
-                draggingText = true;
-                selectedTextIndex = index;
-                dragOffsetX = mouseX - textObj.x;
-                dragOffsetY = mouseY - textObj.y;
-            }
-        });
-        drawTextObjects();
-    });
-
-    canvas.addEventListener('mousemove', (event) => {
-        if (draggingText) {
-            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-            const textObj = textObjects[selectedTextIndex];
-            textObj.x = mouseX - dragOffsetX;
-            textObj.y = mouseY - dragOffsetY;
-            drawTextObjects();
-        }
-    });
-
-    canvas.addEventListener('mouseup', () => {
-        draggingText = false;
-        drawTextObjects();
-    });
-
-    canvas.addEventListener('dblclick', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        textObjects.forEach((textObj, index) => {
-            const textWidth = ctx.measureText(textObj.text).width;
-            if (mouseX >= textObj.x && mouseX <= textObj.x + textWidth && mouseY >= textObj.y - textObj.fontSize && mouseY <= textObj.y) {
-                const newText = prompt("Введите новый текст", textObj.text);
-                if (newText !== null) {
-                    textObj.text = newText;
-                    drawTextObjects();
-                }
-            }
-        });
-    });
-
-    document.getElementById('file-input').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const image = new Image();
-            image.onload = function() {
-                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-            };
-            image.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
 </script>
 </body>
 </html>
