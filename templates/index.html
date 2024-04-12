@@ -6,17 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ФОТОЩЁП</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
-  <!-- <script src="{{ url_for('static', filename='po.js') }}"></script> -->
+  <script src="{{ url_for('static', filename='po.js') }}"></script>
 
 </head>
 
-<body>
+<body style="display: flex;">
 
 
   <div class="start-container">
+
     <button class="btn create" id="openModalBtn">
       Создать шаблон
     </button>
+
     <button class="btn import">
       Выгрузить данные в шаблон
     </button>
@@ -125,13 +127,13 @@
     <h2 class="text_modal">Бренд</h2>
     <select class="filter" id="brand"></select>
     <h2 class="text_modal">Тип изделия</h2>
-    <select class="filter" id="select2"></select>
+    <select class="filter" id="producttype"></select>
     <h2 class="text_modal">Подтип изделия</h2>
-    <select class="filter" id="select3"></select>
+    <select class="filter" id="productsubtype"></select>
     <h2 class="text_modal">Тип металла</h2>
-    <select class="filter" id="select4"></select><br>
+    <select class="filter" id="metaltype"></select><br>
     <button id="closeModalBtn" class="btn_modal">Закрыть</button>
-    <a href="pattern/edit"><button class="btn_modal" style="float: right;">Создать</button></a>
+    <button id="createPattern" class="btn_modal" style="float: right;">Создать</button>
   </div>
 </div>
 
@@ -140,19 +142,42 @@
   document.getElementById('openModalBtn').addEventListener('click', function() {
       document.getElementById('myModal').style.display = 'block';
   });
+
+  document.getElementById('createPattern').addEventListener('click', function() {
+    const brand = document.getElementById('brand').value
+    const metaltype = document.getElementById('metaltype').value
+    const productsubtype = document.getElementById('productsubtype').value
+    const xhr = new XMLHttpRequest();
+        xhr.open("POST", document.URL+"/api/template");
+        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        // const body = JSON.stringify({});
+        xhr.onload = () => {
+          if (xhr.status == 200) {
+            const json_response = JSON.parse(xhr.responseText);
+            window.location.href = document.URL+"/template/"+json_response['template_id'];
+          } else {
+            console.log(`Error: ${xhr.status}`);
+          }
+        };
+        xhr.send(JSON.stringify({
+          "brand_id":brand,
+          "metal_type_id":metaltype,
+          "product_subtype_id":productsubtype,
+        }));
+  });
   
   
   // Функция для загрузки данных JSON из API
-  function fetchData(url, callback) {
+  function fetchData(url, callback, elementId) {
       fetch(url)
           .then(response => response.json())
-          .then(data => callback(data))
+          .then(data => callback(data, elementId))
           .catch(error => console.error('Ошибка загрузки данных:', error));
   }
   
   // Функция для заполнения выпадающего списка
-  function populateDropdown(jsonData) {
-      const dropdown = document.getElementById('brand');
+  function loadComboBox(jsonData, elementId) {
+      const dropdown = document.getElementById(elementId);
       // Очистка списка перед добавлением новых элементов
       dropdown.innerHTML = '';
       // Добавление элементов из JSON в список
@@ -165,11 +190,14 @@
   }
   
   // URL API
-  const apiUrl = 'http://127.0.0.1:5000/api/brand';
+  const apiUrl = 'http://127.0.0.1:5000/api/';
   
   // Вызов функции загрузки данных и заполнения списка при загрузке страницы
   window.addEventListener('load', () => {
-      fetchData(apiUrl, populateDropdown);
+      fetchData(apiUrl+'brand', loadComboBox, 'brand');
+      fetchData(apiUrl+'productsubtype', loadComboBox, 'productsubtype');
+      fetchData(apiUrl+'producttype', loadComboBox, 'producttype');
+      fetchData(apiUrl+'metaltype', loadComboBox, 'metaltype');
   });
   
   

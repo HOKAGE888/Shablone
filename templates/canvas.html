@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление картинок на Canvas</title>
+<style>
+    #canvas-container {
+        position: relative;
+    }
+    #canvas {
+        border: 1px solid #000;
+        cursor: pointer;
+    }
+    .resize-handle {
+        width: 20px;
+        height: 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        cursor: nwse-resize;
+        border-radius: 50%;
+    }
+</style>
+</head>
+<body>
+<div id="canvas-container">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <button id="add-image-btn">Добавить картинку</button>
+</div>
+
+<!-- Модальное окно выбора файла -->
+<input type="file" id="file-input" accept=".png" style="display: none;">
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resizeHandleSize = 20; // Размер элементов для изменения размера
+    let images = []; // Массив для хранения добавленных картинок
+    let selectedImageIndex = -1; // Индекс выбранной картинки
+    let dragStartX, dragStartY; // Начальные координаты перетаскивания
+
+    // Отрисовка всех картинок на холсте
+    function drawImages() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        images.forEach((image, index) => {
+            ctx.drawImage(image.element, image.x, image.y, image.width, image.height);
+            if (index === selectedImageIndex) {
+                drawResizeHandles(image);
+            }
+        });
+    }
+
+    // Отрисовка элементов для изменения размера картинки
+    function drawResizeHandles(image) {
+        const handles = [
+            { x: image.x - resizeHandleSize / 2, y: image.y - resizeHandleSize / 2 }, // Верхний левый угол
+            { x: image.x + image.width - resizeHandleSize / 2, y: image.y - resizeHandleSize / 2 }, // Верхний правый угол
+            { x: image.x + image.width - resizeHandleSize / 2, y: image.y + image.height - resizeHandleSize / 2 }, // Нижний правый угол
+            { x: image.x - resizeHandleSize / 2, y: image.y + image.height - resizeHandleSize / 2 } // Нижний левый угол
+        ];
+        handles.forEach(handle => {
+            ctx.beginPath();
+            ctx.arc(handle.x + resizeHandleSize / 2, handle.y + resizeHandleSize / 2, resizeHandleSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    // Добавление картинки на холст
+    function addImage(x, y, width, height, element) {
+        const imageObj = {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            element: element
+        };
+        images.push(imageObj);
+        drawImages();
+    }
+
+    // Обработчик клика на холсте
+    canvas.addEventListener('click', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        selectedImageIndex = images.findIndex(image => {
+            return mouseX >= image.x && mouseX <= image.x + image.width &&
+                   mouseY >= image.y && mouseY <= image.y + image.height;
+        });
+        drawImages();
+    });
+
+    // Обработчик нажатия кнопки мыши на холсте
+    canvas.addEventListener('mousedown', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        selectedImageIndex = images.findIndex(image => {
+            return mouseX >= image.x && mouseX <= image.x + image.width &&
+                   mouseY >= image.y && mouseY <= image.y + image.height;
+        });
+        if (selectedImageIndex !== -1) {
+            const selectedImage = images[selectedImageIndex];
+            const handleIndex = getResizeHandleIndex(mouseX, mouseY, selectedImage);
+            if (handleIndex !== -1) {
+                dragStartX = mouseX;
+                dragStartY = mouseY;
+                canvas.addEventListener('mousemove', resizeImage);
+                canvas.addEventListener('mouseup', () => {
+                    canvas.removeEventListener('mousemove', resizeImage);
+                });
+            } else {
+                dragStartX = mouseX - selectedImage.x;
+                dragStartY = mouseY - selectedImage.y;
+                canvas.addEventListener('mousemove', dragImage);
+                canvas.addEventListener('mouseup', () => {
+                    canvas.removeEventListener('mousemove', dragImage);
+                });
+            }
+        }
+    });
+
+    // Получение индекса элемента для изменения размера
+    function getResizeHandleIndex(x, y, image) {
+        const handles = [
+            { x: image.x - resizeHandleSize / 2, y: image.y - resizeHandleSize / 2 }, // Верхний левый угол
+            { x: image.x + image.width - resizeHandleSize / 2, y: image.y - resizeHandleSize / 2 }, // Верхний правый угол
+            { x: image.x + image.width - resizeHandleSize / 2, y: image.y + image.height - resizeHandleSize / 2 }, // Нижний правый угол
+            { x: image.x - resizeHandleSize / 2, y: image.y + image.height - resizeHandleSize / 2 } // Нижний левый угол
+        ];
+        for (let i = 0; i < handles.length; i++) {
+            const handle = handles[i];
+            const dx = handle.x + resizeHandleSize / 2 - x;
+            const dy = handle.y + resizeHandleSize / 2 - y;
+            if (dx * dx + dy * dy <= (resizeHandleSize / 2) * (resizeHandleSize / 2)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Функция для изменения размера картинки
+    function resizeImage(event) {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        const selectedImage = images[selectedImageIndex];
+        const deltaX = mouseX - dragStartX;
+        const deltaY = mouseY - dragStartY;
+        const handleIndex = getResizeHandleIndex(mouseX, mouseY, selectedImage);
+        if (handleIndex !== -1) {
+            switch (handleIndex) {
+                case 0: // Верхний левый угол
+                    selectedImage.x += deltaX;
+                    selectedImage.y += deltaY;
+                    selectedImage.width -= deltaX;
+                    selectedImage.height -= deltaY;
+                    break;
+                case 1: // Верхний правый угол
+                    selectedImage.y += deltaY;
+                    selectedImage.width += deltaX;
+                    selectedImage.height -= deltaY;
+                    break;
+                case 2: // Нижний правый угол
+                    selectedImage.width += deltaX;
+                    selectedImage.height += deltaY;
+                    break;
+                case 3: // Нижний левый угол
+                    selectedImage.x += deltaX;
+                    selectedImage.width -= deltaX;
+                    selectedImage.height += deltaY;
+                    break;
+            }
+            drawImages();
+        }
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+    }
+
+    // Функция для перетаскивания картинки
+    function dragImage(event) {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        const selectedImage = images[selectedImageIndex];
+        selectedImage.x = mouseX - dragStartX;
+        selectedImage.y = mouseY - dragStartY;
+        drawImages();
+    }
+
+    // Обработчик клика на кнопку "Добавить картинку"
+    document.getElementById('add-image-btn').addEventListener('click', () => {
+        document.getElementById('file-input').click();
+    });
+
+    // Обработчик выбора файла
+    document.getElementById('file-input').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                addImage(100, 100, img.width, img.height, img);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+</body>
+</html>

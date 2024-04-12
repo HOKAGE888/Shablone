@@ -33,7 +33,7 @@ class Product(Table):
 
 
 class Template(Table):
-    json = TextField(null=True)
+    json = TextField(default='{"width": 300, "height": 600, "color": "#ffffff", "entities": []}')
     imagemagick = TextField(null=True)
     brand = ForeignKeyField(Brand)
     metal_type = ForeignKeyField(MetalType)

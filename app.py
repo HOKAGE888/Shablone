@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, abort, jsonify, send_file
 from models import Brand, ProductSubtype, ProductType, Template, Image, MetalType
 import os
 import tempfile
-import json
 from flask import json
 
 json.provider.DefaultJSONProvider.ensure_ascii = False
@@ -11,11 +10,11 @@ app = Flask(__name__)
 
 @app.route('/template/<int:template_id>')
 def upload(template_id):
-  return render_template('upload_file_example.html', template_id=template_id)
+  return render_template('edit_pattern.html', template_id=template_id)
 
-@app.route('/pattern/edit')
+@app.route('/edit')
 def edit():
-  return render_template('edit_pattern.html')
+  return render_template('canvas.html')
 
 
 @app.route('/')
@@ -144,9 +143,10 @@ def get_metaltypes():
   return jsonify(result)
 
 @app.route('/api/template', methods=['POST'])
-def generate_template():
+def create_template():
   """Создает шаблон"""
-  template = Template.create()
+  print(request.json)
+  template = Template.create(**request.json)
   return jsonify({'template_id':template.id}), 200
 
 
@@ -158,9 +158,12 @@ def get_template(template_id):
     return jsonify({'error': 'Шаблон не найден'}), 400
   
   if request.method == 'PATCH':
-    template.json = request.json
+    print(request.json)
+    template.json = str(request.json).replace("'",'"')
     template.imagemagick = None
+    template.save()
   
+  print(template.json)
   return template.json, 200
 
 @app.route('/api/template/<int:template_id>/image', methods=['GET'])

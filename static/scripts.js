@@ -3,10 +3,10 @@ let canvas;
 
 document.addEventListener("DOMContentLoaded", (event) => {
     fileInput = document.getElementById('file-input') 
-    fileInput.addEventListener("change", load_image, false);
+    // fileInput.addEventListener("change", load_image, false);
     canvas = document.getElementById('pattern')
-    canvas.dataMaxWidth = canvas.width;
-    canvas.dataMaxHeight = canvas.height;
+    // canvas.dataMaxWidth = canvas.width;
+    // canvas.dataMaxHeight = canvas.height;
 });
 
 

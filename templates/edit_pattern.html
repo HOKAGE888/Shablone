@@ -7,84 +7,327 @@
   <title>ЩАБЛЁН</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
-  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-  <script src="{{ url_for('static', filename='edit_template.js') }}"></script>
+  <!-- <script src="{{ url_for('static', filename='scripts.js') }}"></script> -->
+  <!-- <script src="{{ url_for('static', filename='edit_template.js') }}"></script> -->
 
 </head>
 
-<body bgcolor="#dee2e6" class="flex-vertical">
-    <div class="fone">
-      <div class="top-element">
-        <div style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
-          SOKOLOV
-        </div> 
-        <hr class="liniya">
-      </div>
+<body bgcolor="#dee2e6">
+
+    <div class="left-menu">
+        <div class="top-element">
+            <div
+                style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
+                SOKOLOV
+            </div>
+            <hr class="liniya">
+        </div>
+
+        <button class="panel" id="edit-canvas-btn">Редактирование холста</button>
+
+        <button id="add-text-btn" class="panel">Добавить текст</button>
+
+        <button class="panel" id="add-img">Добавить картинку</button>
+
+        <div class="preview">
+            <hr style="width: 80%">
+            <button id="save-btn" class="preview">Сохранить</button>
+        </div>
+    </div>
+
+    
 
 
-        <button class="panel" >Редактирование холста</button>
-
-        <button id="add-text" class="panel" >Добавить текст</button>
-
-        <button class="panel" onclick="open_file_dialog()">Добавить картинку</button>
-        <input id="file-input" type="file" name="name" style="display: none;"/>
 
 
-      <div class="preview">
-        <hr style="width: 80%">
-        <button class="preview" >Сохранить</button>
-      </div>
-      
-      
+    <div class="right-menu">
+        <div id="canvas-property-panel">
+            <div class="right-text">Холст</div>
+            <div class="text-right-menu">
+                <h class="text_pole">Высота:</h>
+                <input class="text-field__input" id="canvas-height" type="text" name="text" placeholder="Высота"><br>
+                <h class="text_pole">Ширина:</h>
+                <input class="text-field__input" id="canvas-width" type="text" name="text" placeholder="Ширина"><br>
+            </div>
+
+            <div class="right-text">
+                Цвет фона
+                <input class="cr" type="color" id="canvas-color" value="#ffffff">
+            </div>
+        </div>
+
+        <div id="text-properties-panel" style="display:none">
+            <label for="text-input">Текст:</label><br>
+            <input type="text" id="text-input"><br><br>
+            <label for="x-coordinate">X:</label><br>
+            <input type="text" id="x-coordinate"><br><br>
+            <label for="y-coordinate">Y:</label><br>
+            <input type="text" id="y-coordinate"><br><br>
+            <label for="font-size">Размер шрифта:</label><br>
+            <input type="number" id="font-size" min="1"><br><br>
+            <label for="font-weight">Жирность:</label><br>
+            <select id="font-weight">
+                <option value="normal">Обычный</option>
+                <option value="bold">Жирный</option>
+            </select><br><br>
+        </div>
+    </div>
+
+    <canvas id="canvas" class="canvas" ></canvas>
+
+    
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
         
-      <div class="add-img-template" id="add-img"></div>
-      <div class="add-text-template"id="add-text"></div>
-    </div>
-    <div class="main-content" id="main">
-      <!-- <canvas id="pattern"></canvas> -->
-    </div>
+        // Пример списка объектов
+        /*
+        {  
+            "width": "200",
+            "height": "200",
+            "color": "#ffffff"
+            "entities": [
+                {
+                    "type":"image",
+                    "id": 1,
+                    "url": "/api/image/1",
+                    "width": 100,
+                    "height": 100,
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "type":"text",
+                    "text": "wello world",
+                    "fontSize": 2,
+                    "x": 0,
+                    "y": 0p
+                }
+            ]
+        }
+        
+        */
+       
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const parts =  window.location.href.split('/')
+        const template_id = parts[parts.length-1];
+        
 
-    <div class="right-menu flex-vertical">
-      <div class="right-text">
-        Размер шаблона
-      </div>
-      <div class="text-right-menu">
-        <h class="text_pole">Высота:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Высота" ><br>
-        <h class="text_pole">Ширина:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Ширина" ><br>
-      </div>
-      <div class="right-text">
-        Отступ по вертикали
-      </div>
-      <div class="text-right-menu">
-        <h class="text_pole">Отступ сверху:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ сверху" ><br>
-        <h class="text_pole">Отступ снизу:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ снизу" ><br>
-      </div>
-
-      <div class="right-text">
-        Отступ по горизонтали
-      </div>
-
-      <div class="text-right-menu">
-        <h class="text_pole">Отступ слева:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ слева" ><br>
-        <h class="text_pole">Отступ справа:</h>
-        <input class="text-field__input" type="text" name="text" placeholder="Отступ справа" ><br>
-      </div>
+       // Массив для хранения текстов
+        let canvas_data = {
+            id: template_id,
+            width: canvas.width,
+            height: canvas.height,
+            color: "#ffffff",
+            entities: []
+        };
+        
+        
+        function fetchData(url, callback) {
+            fetch(url)
+            .then(response => response.json())
+            .then(data => callback(data))
+            .catch(error => console.error('Ошибка загрузки данных:', error));
+        }
+            
+        function drawObjects() {
+            document.getElementById('canvas-width').value = canvas_data.width;
+            canvas.width = canvas_data.width;
+            
+            document.getElementById('canvas-height').value = canvas_data.height;
+            canvas.height = canvas_data.height;
 
 
-      <div class="right-text">
-        Цвет фона
-        <input class="cr" type="color">
-      </div>
-      
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('canvas-color').value = canvas_data.color;
+            canvas.style.backgroundColor = document.getElementById('canvas-color').value;
 
-      
-    </div>
+            canvas_data.entities.forEach((entity, index) => {
+                switch (entity.type){
+                    case 'text':
+                        ctx.fillStyle = '#dadada';
+                        ctx.font = `normal 24px Arial`;
+                        ctx.fillText(entity.text, entity.x, entity.y);
+                        if (index === selectedIndex) {
+                            ctx.strokeStyle = 'blue';
+                            ctx.strokeRect(entity.x - 5, entity.y - entity.fontSize, ctx.measureText(entity.text).width + 10, entity.fontSize + 5);
+                        }
+                        break;
+                    case 'image':
 
+                        break;
+                }
+            });
+        }
 
+        function loadTemplate(jsonData){
+            canvas_data = jsonData;
+            drawObjects();
+        }
+
+        
+        let selectedIndex = -1; // Индекс выбранного
+        let dragStartX, dragStartY; // Начальные координаты перетаскивания
+        document.getElementById('canvas-width').value = canvas.width;
+        document.getElementById('canvas-height').value = canvas.height;
+        
+        
+        document.getElementById('canvas-width').addEventListener('input', () => {
+            canvas_data.width = parseInt(document.getElementById('canvas-width').value);
+            drawObjects();
+        });
+        
+        document.getElementById('canvas-height').addEventListener('input', () => {
+            canvas_data.height = parseInt(document.getElementById('canvas-height').value);
+            drawObjects();
+        });
+        
+        document.getElementById('canvas-color').addEventListener('input', () => {
+            canvas_data.color = document.getElementById('canvas-color').value;
+            drawObjects();
+        });
+        
+        
+        function addText(x, y, text, fontSize, fontWeight) {
+            const defaultColor = 'black';
+            const textObj = {
+                type: 'text',
+                text: text,
+                fontSize: fontSize,
+                x: x,
+                y: y
+            };
+            canvas_data.entities.push(textObj);
+            drawObjects();
+        }
+        
+        canvas.addEventListener('click', (event) => {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            selectedIndex = canvas_data.entities.findIndex(obj => {
+                const textWidth = ctx.measureText(obj.text).width;
+                return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+            });
+            drawObjects();
+            if (selectedIndex !== -1) {
+                document.getElementById('canvas-property-panel').style.display = 'none'
+                document.getElementById('text-properties-panel').style.display = 'block'
+                
+                const selectedText = canvas_data.entities[selectedIndex];
+                document.getElementById('text-input').value = selectedText.text;
+                document.getElementById('x-coordinate').value = selectedText.x;
+                document.getElementById('y-coordinate').value = selectedText.y;
+                document.getElementById('font-size').value = selectedText.fontSize;
+                document.getElementById('font-weight').value = selectedText.fontWeight;
+            }
+        });
+        
+        document.getElementById('text-input').addEventListener('input', (event) => {
+            if (selectedIndex !== -1) {
+                canvas_data.entities[selectedIndex].text = event.target.value;
+                drawObjects();
+            }
+        });
+        
+        document.getElementById('x-coordinate').addEventListener('input', (event) => {
+            if (selectedIndex !== -1) {
+                const newX = parseFloat(event.target.value);
+                if (!isNaN(newX)) {
+                    canvas_data[selectedIndex].x = newX;
+                    drawObjects();
+                }
+            }
+        });
+        
+        document.getElementById('y-coordinate').addEventListener('input', (event) => {
+            if (selectedIndex !== -1) {
+                const newY = parseFloat(event.target.value);
+                if (!isNaN(newY)) {
+                    canvas_data[selectedIndex].y = newY;
+                    drawObjects();
+                }
+            }
+        });
+        
+        document.getElementById('font-size').addEventListener('input', (event) => {
+            if (selectedIndex !== -1) {
+                const newFontSize = parseInt(event.target.value);
+                if (!isNaN(newFontSize)) {
+                    canvas_data.entities[selectedIndex].fontSize = newFontSize;
+                    drawObjects();
+                }
+            }
+        });
+        
+        document.getElementById('font-weight').addEventListener('change', (event) => {
+            if (selectedIndex !== -1) {
+                canvas_data.entities[selectedIndex].fontWeight = event.target.value;
+                drawObjects();
+            }
+        });
+        
+        canvas.addEventListener('mousedown', (event) => {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            selectedIndex = canvas_data.entities.findIndex(obj => {
+                const textWidth = ctx.measureText(obj.text).width;
+                return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+            });
+            if (selectedIndex !== -1) {
+                dragStartX = mouseX;
+                dragStartY = mouseY;
+                canvas.addEventListener('mousemove', dragText);
+                canvas.addEventListener('mouseup', () => {
+                    canvas.removeEventListener('mousemove', dragText);
+                });
+            }
+        });
+        
+        function dragText(event) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            const deltaX = mouseX - dragStartX;
+            const deltaY = mouseY - dragStartY;
+            canvas_data.entities[selectedIndex].x += deltaX;
+            canvas_data.entities[selectedIndex].y += deltaY;
+            dragStartX = mouseX;
+            dragStartY = mouseY;
+            drawObjects();
+        }
+        
+        document.getElementById('edit-canvas-btn').addEventListener('click', () => {
+            document.getElementById('canvas-property-panel').style.display = 'block'
+            document.getElementById('text-properties-panel').style.display = 'none'
+        });
+        
+        document.getElementById('add-text-btn').addEventListener('click', () => {
+            addText(100, 100, 'Новый текст', 24, 'normal');
+        });
+        
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PATCH", `http://${hostname}:${port}/api/template/${template_id}`);
+            xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+            xhr.onload = () => {
+            if (xhr.status == 200) {
+                const json_response = JSON.parse(xhr.responseText);
+                // window.location.href = `http://${hostname}:${port}/template/${template_id}`;
+            } else {
+                console.log(`Error: ${xhr.status}`);
+            }
+            };
+            xhr.send(JSON.stringify(canvas_data));
+        });
+
+        console.log(`http://${hostname}:${port}/api/template/${template_id}`)
+        fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
+        
+    </script>
 </body>
+
+
+
 </html>

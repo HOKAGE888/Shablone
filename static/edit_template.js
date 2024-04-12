@@ -1,115 +1,160 @@
-template_pattern = []
+template_pattern = [
+    {
+        "id": "0",
+        "style": {
+            "z-index": "4",
+            "background-color": "#fff",
+            "width": "1000px",
+            "height": "800px",
+            "margin-top": "0px",
+            "margin-left": "0px",
+            "position": "absolute",
+        },
+        "const": {
+            "margin-top": `${(document.documentElement.scrollHeight - 800) / 2}px`,
+            "margin-left": `${(document.documentElement.scrollWidth - 1000) / 2}px`,
+        },
+        "tag": "background",
+    }
+]
 
-//     "id": "1",
-//     "style": {
+current_id = 0
 
-//         "z-index": "1",
-//         "position": "absolute",
-//         "width": "600px",   
-//         "height": "800px",
-//         "background-color": "#ffffff",
-//     },
-//     "class": "for-js-background",
-//     "const": {
+function set_template_settings(id) {
+    current_id = id
+    need_element = search_by_id(id)
+    if (need_element == {}) {
+        console.log("error search")
+        return
+    }
 
-//     }
-// },
-// {
-//     "id": "2",
-//     "style": {
-//         "z-index": "5",
-//         "margin-left": "500px",
-//         "margin-top": "50px",
-//         "position": "absolute",
-//         "width": "200px",
-//         "height": "300px",
-//         "background-color": "#ff00ff"
-//     }
-// },
-// {
-//     "id": "2",
-//     "style": {
-//         "z-index": "5",
-//         "margin-left": "600px",
-//         "margin-top": "150px",
-//         "position": "absolute",
-//         "width": "300px",
-//         "height": "700px",
-//         "background-image": "url('https://fikiwiki.com/uploads/posts/2022-02/1645054787_23-fikiwiki-com-p-kartinki-ikonki-23.png')",
-//         "background-color": "transparent",
-//         "background-size": "100% 100%"  
-//     },
-//     // "src": "https://w7.pngwing.com/pngs/922/837/png-transparent-computer-icons-others-angle-text-rectangle.png"
-// }
-// ]
 
-function update_template_view() {
-    add_element(template_pattern)
+    for (const [key, value] of Object.entries(need_element["style"])) {
+        current_parametr = document.getElementById(key)
+        if (current_parametr != null) {
+            current_parametr.value = value
+        }
+    }
+
 }
 
-function add_element(element) {
+function update_view() {
     main = document.getElementById("main")
     main.innerHTML = ""
-    for (let index = 0; index < template_pattern.length; index++) {
-        innerElement = '<div '
-        for (const [key, value] of Object.entries(template_pattern[index])) {
-            if (typeof (value) == 'string') {
-                innerElement += `${key}="${value}"`;
+    template_pattern.forEach(element => {
+        innerElement = `<${element["tag"]} id="${element["id"]}" style="`
+        for (const [key, value] of Object.entries(element["style"])) {
+            if (key in element["const"]) {
+                innerElement += `${key}: calc(${element["const"][key]} + ${value}); `
             } else {
-                if (key == "style") {
-                    innerElement += 'style="'
-                    console.log(template_pattern)
-                    for (const [key_style, value_style] of Object.entries(template_pattern[index][key])) {
-
-                        if (template_pattern[index]["const"]?.[key_style] != undefined) {
-                            innerElement += `${key_style}: calc(${value_style} + ${template_pattern[index]["const"][key_style]});  `
-                        } else {
-                            innerElement += `${key_style}: ${value_style};  `;
-                        }
-
-                    }
-                    innerElement += '"'
-                }
+                innerElement += `${key}: ${value}; `
             }
         }
-        innerElement += '>'
-        console.log(typeof(template_pattern[index]?.content), template_pattern[index]?.content)
-        innerElement+=  (template_pattern[index]?.content) != undefined ? template_pattern[index]?.content : "" 
-        innerElement += '</div>'
-        // console.log(innerElement)
-
+        innerElement += '">'
+        if (element["content"] != null) {
+            innerElement += `${element["content"]}</${element["tag"]}>`
+        }
         main.innerHTML += innerElement
-    }
+    });
 }
 
-/* <a href="https://www.flaticon.com/ru/free-icons/-image"</a> */
 
 id = 0
+scale = 1
 window.onload = function () {
-    update_template_view()
+    update_view()
     document.getElementById("add-text").addEventListener('click', function () {
-        id += 1
-        template_pattern.push(
-            {
-                "id": String(id),
-                "style": {
-                    "z-index": "5",
-                    'font-size': "2em",
-                    "background-color": "#dadada",
-                    "width": "80px",
-                    "height": "35px",
-                    "margin-top": "0px",
-                    "margin-left": "0px",
-                    "position": "absolute",
-                    "word-wrap": "break-word",
-                },
-                "const": {
-                    "margin-top": `${(document.documentElement.scrollWidth - 100) / 2}px`,
-                    "margin-left": `${(document.documentElement.scrollWidth - 100) / 2}px`,
-                },
-                "content": "Текст"
-            }
-        )
-        add_element()
+        add_element("text")
     })
+
+    document.getElementById("add-img").addEventListener('click', function () {
+        add_element("img")
+    })
+
+    document.addEventListener("mousewheel", function (e) {
+        if (e.deltaY > 0) {
+            scale += 0.1
+        } else {
+            scale -= 0.1
+        }
+        document.querySelectorAll(".main-content")[0].style = `transform: scale(${scale});`
+    })
+
+    document.querySelectorAll("input").forEach(element => {
+        element.addEventListener("input", function () {
+            // console.log(default_template)
+            update_parametr(current_id, element.id, element.value)
+        })
+    })
+}
+
+function add_element(type) {
+    id += 1
+    // new_elemetn = {...default_template[type]}
+    // new_elemetn["style"] = {...default_template[type]["style"]}
+    if (type == "text") {
+        new_elemetn = {
+            "id": String(id),
+            "style": {
+                "z-index": "5",
+                'font-size': "2em",
+                "background-color": "#dadada",
+                "width": "80px",
+                "height": "35px",
+                "margin-top": "0px",
+                "margin-left": "0px",
+                "position": "absolute",
+                "word-wrap": "break-word",
+            },
+            "const": {
+                "margin-top": `${(document.documentElement.scrollHeight) / 2}px`,
+                "margin-left": `${(document.documentElement.scrollWidth) / 2}px`,
+            },
+            "content": "Текст",
+            "tag": "text",
+        }
+    } else {
+        new_elemetn = {
+            "id": String(id),
+            "style": {
+                "z-index": "5",
+                "background-color": "#dadada",
+                "width": "80px",
+                "height": "80px",
+                "margin-top": "0px",
+                "margin-left": "0px",
+                "position": "absolute",
+                "background-image": "url(https://static.tildacdn.com/tild3362-3037-4133-a534-333837306166/_2022-06-29_12011419.png)",
+                "background-size": "cover",
+                "background-repeat": "no-repeat"
+            },
+            "const": {
+                "margin-top": `${(document.documentElement.scrollHeight) / 2}px`,
+                "margin-left": `${(document.documentElement.scrollWidth) / 2}px`,
+            },
+            "tag": "img"
+        }
+    }
+
+    for (const [key, value] of Object.entries(new_elemetn["const"])) {
+        new_elemetn["const"][key] = template_pattern[0]["const"][key]
+    }
+    template_pattern.push(new_elemetn)
+    update_view()
+    set_template_settings(id)
+}
+
+function update_parametr(id, parametr_name, value) {
+    search_by_id(id)["style"][parametr_name] = value
+    update_view()
+    set_template_settings(id)
+}
+
+function search_by_id(id) {
+    for (let index = 0; index < template_pattern.length; index++) {
+        if (template_pattern[index]["id"] == String(id)) {
+            return template_pattern[index]
+        }
+    }
+    throw Error("Pizda, element ne nayden")
 }
