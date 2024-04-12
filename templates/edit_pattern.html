@@ -14,212 +14,217 @@
 
 <body bgcolor="#dee2e6">
 
-  <div class="fone">
-    <div class="top-element">
-      <div
-        style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
-        SOKOLOV
-      </div>
-      <hr class="liniya">
+    <div class="left-menu">
+        <div class="top-element">
+            <div
+                style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
+                SOKOLOV
+            </div>
+            <hr class="liniya">
+        </div>
+
+        <button class="panel" id="edit-canvas-btn">Редактирование холста</button>
+
+        <button id="add-text-btn" class="panel">Добавить текст</button>
+
+        <button class="panel" id="add-img">Добавить картинку</button>
+
+        <div class="preview">
+            <hr style="width: 80%">
+            <button class="preview">Сохранить</button>
+        </div>
     </div>
 
-    <button class="panel" id="edit-canvas-btn">Редактирование холста</button>
+    
 
-    <button id="add-text-btn" class="panel">Добавить текст</button>
 
-    <button class="panel" id="add-img">Добавить картинку</button>
 
-    <div class="preview">
-      <hr style="width: 80%">
-      <button class="preview">Сохранить</button>
+
+    <div class="right-menu">
+        <div id="canvas-property-panel">
+            <div class="right-text">Холст</div>
+            <div class="text-right-menu">
+                <h class="text_pole">Высота:</h>
+                <input class="text-field__input" id="canvas-height" type="text" name="text" placeholder="Высота"><br>
+                <h class="text_pole">Ширина:</h>
+                <input class="text-field__input" id="canvas-width" type="text" name="text" placeholder="Ширина"><br>
+            </div>
+
+            <div class="right-text">
+                Цвет фона
+                <input class="cr" type="color" id="canvas-color" value="#ffffff">
+            </div>
+        </div>
+
+        <div id="text-properties-panel">
+            <label for="text-input">Текст:</label><br>
+            <input type="text" id="text-input"><br><br>
+            <label for="x-coordinate">X:</label><br>
+            <input type="text" id="x-coordinate"><br><br>
+            <label for="y-coordinate">Y:</label><br>
+            <input type="text" id="y-coordinate"><br><br>
+            <label for="font-size">Размер шрифта:</label><br>
+            <input type="number" id="font-size" min="1"><br><br>
+            <label for="font-weight">Жирность:</label><br>
+            <select id="font-weight">
+                <option value="normal">Обычный</option>
+                <option value="bold">Жирный</option>
+            </select><br><br>
+        </div>
     </div>
-  </div>
-  <canvas id="canvas" width="800" height="600" style="margin-left: 400px; border: 1px solid red;"></canvas> 
 
+    <canvas id="canvas" width="500"; height="700"; class="canvas"></canvas>
 
+    
 
-  <div class="right-menu flex-vertical">
-    <div id="canvas-property-panel">
-      <div class="right-text">Холст</div>
-      <div class="text-right-menu">
-        <h class="text_pole">Высота:</h>
-        <input class="text-field__input" id="canvas-height" type="text" name="text" placeholder="Высота"><br>
-        <h class="text_pole">Ширина:</h>
-        <input class="text-field__input" id="canvas-width" type="text" name="text" placeholder="Ширина"><br>
-      </div>
-      <div class="right-text" style="display:none">
-        Отступ по вертикали
-      </div>
-      <div class="right-text">
-        Цвет фона
-        <input class="cr" type="color" id="canvas-color" value="#ffffff" >
-      </div>
-    </div>
-    <div id="text-properties-panel" style="display:none">
-      <label for="text-input">Текст:</label><br>
-      <input type="text" id="text-input"><br><br>
-      <label for="x-coordinate">X:</label><br>
-      <input type="text" id="x-coordinate"><br><br>
-      <label for="y-coordinate">Y:</label><br>
-      <input type="text" id="y-coordinate"><br><br>
-      <label for="font-size">Размер шрифта:</label><br>
-      <input type="number" id="font-size" min="1"><br><br>
-      <label for="font-weight">Жирность:</label><br>
-      <select id="font-weight">
-          <option value="normal">Обычный</option>
-          <option value="bold">Жирный</option>
-      </select><br><br>
-  </div>
-  </div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let textObjects = []; // Массив для хранения текстов
+        let selectedTextIndex = -1; // Индекс выбранного текста
+        let dragStartX, dragStartY; // Начальные координаты перетаскивания
 
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let textObjects = []; // Массив для хранения текстов
-    let selectedTextIndex = -1; // Индекс выбранного текста
-    let dragStartX, dragStartY; // Начальные координаты перетаскивания
-
-    document.getElementById('canvas-width').addEventListener('input', () => {
-        canvas.width = parseInt(document.getElementById('canvas-width').value);
-    });
-
-    document.getElementById('canvas-height').addEventListener('input', () => {
-        canvas.height = parseInt(document.getElementById('canvas-height').value);
-    });
-
-    document.getElementById('canvas-color').addEventListener('input', () => {
-        canvas.style.backgroundColor = document.getElementById('canvas-color').value;
-    });
-
-    function drawTextObjects() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        textObjects.forEach((textObj, index) => {
-            ctx.fillStyle = textObj.color;
-            ctx.font = `${textObj.fontWeight} ${textObj.fontSize}px Arial`;
-            ctx.fillText(textObj.text, textObj.x, textObj.y);
-            if (index === selectedTextIndex) {
-                ctx.strokeStyle = 'blue';
-                ctx.strokeRect(textObj.x - 5, textObj.y - textObj.fontSize, ctx.measureText(textObj.text).width + 10, textObj.fontSize + 5);
-            }
+        document.getElementById('canvas-width').addEventListener('input', () => {
+            canvas.width = parseInt(document.getElementById('canvas-width').value);
         });
-    }
 
-    function addText(x, y, text, fontSize, fontWeight) {
-        const defaultColor = 'black';
-        const textObj = {
-            text: text,
-            fontSize: fontSize,
-            fontWeight: fontWeight,
-            color: defaultColor,
-            x: x,
-            y: y
-        };
-        textObjects.push(textObj);
-        drawTextObjects();
-    }
-
-    canvas.addEventListener('click', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        selectedTextIndex = textObjects.findIndex(obj => {
-            const textWidth = ctx.measureText(obj.text).width;
-            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+        document.getElementById('canvas-height').addEventListener('input', () => {
+            canvas.height = parseInt(document.getElementById('canvas-height').value);
         });
-        drawTextObjects();
-        if (selectedTextIndex !== -1) {
-          document.getElementById('canvas-property-panel').style.display = 'none'
-          document.getElementById('text-properties-panel').style.display = 'flex'
-            const selectedText = textObjects[selectedTextIndex];
-            document.getElementById('text-input').value = selectedText.text;
-            document.getElementById('x-coordinate').value = selectedText.x;
-            document.getElementById('y-coordinate').value = selectedText.y;
-            document.getElementById('font-size').value = selectedText.fontSize;
-            document.getElementById('font-weight').value = selectedText.fontWeight;
-        }
-    });
 
-    document.getElementById('text-input').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            textObjects[selectedTextIndex].text = event.target.value;
-            drawTextObjects();
-        }
-    });
-
-    document.getElementById('x-coordinate').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newX = parseFloat(event.target.value);
-            if (!isNaN(newX)) {
-                textObjects[selectedTextIndex].x = newX;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('y-coordinate').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newY = parseFloat(event.target.value);
-            if (!isNaN(newY)) {
-                textObjects[selectedTextIndex].y = newY;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('font-size').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newFontSize = parseInt(event.target.value);
-            if (!isNaN(newFontSize)) {
-                textObjects[selectedTextIndex].fontSize = newFontSize;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('font-weight').addEventListener('change', (event) => {
-        if (selectedTextIndex !== -1) {
-            textObjects[selectedTextIndex].fontWeight = event.target.value;
-            drawTextObjects();
-        }
-    });
-
-    canvas.addEventListener('mousedown', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        selectedTextIndex = textObjects.findIndex(obj => {
-            const textWidth = ctx.measureText(obj.text).width;
-            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+        document.getElementById('canvas-color').addEventListener('input', () => {
+            canvas.style.backgroundColor = document.getElementById('canvas-color').value;
         });
-        if (selectedTextIndex !== -1) {
-            dragStartX = mouseX;
-            dragStartY = mouseY;
-            canvas.addEventListener('mousemove', dragText);
-            canvas.addEventListener('mouseup', () => {
-                canvas.removeEventListener('mousemove', dragText);
+
+        function drawTextObjects() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            textObjects.forEach((textObj, index) => {
+                ctx.fillStyle = textObj.color;
+                ctx.font = `${textObj.fontWeight} ${textObj.fontSize}px Arial`;
+                ctx.fillText(textObj.text, textObj.x, textObj.y);
+                if (index === selectedTextIndex) {
+                    ctx.strokeStyle = 'blue';
+                    ctx.strokeRect(textObj.x - 5, textObj.y - textObj.fontSize, ctx.measureText(textObj.text).width + 10, textObj.fontSize + 5);
+                }
             });
         }
-    });
 
-    function dragText(event) {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        const deltaX = mouseX - dragStartX;
-        const deltaY = mouseY - dragStartY;
-        textObjects[selectedTextIndex].x += deltaX;
-        textObjects[selectedTextIndex].y += deltaY;
-        dragStartX = mouseX;
-        dragStartY = mouseY;
-        drawTextObjects();
-    }
+        function addText(x, y, text, fontSize, fontWeight) {
+            const defaultColor = 'black';
+            const textObj = {
+                text: text,
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                color: defaultColor,
+                x: x,
+                y: y
+            };
+            textObjects.push(textObj);
+            drawTextObjects();
+        }
 
-    document.getElementById('edit-canvas-btn').addEventListener('click', () => {
-      document.getElementById('canvas-property-panel').style.display = 'flex'
-      document.getElementById('text-properties-panel').style.display = 'none'
-    });
-    
-    document.getElementById('add-text-btn').addEventListener('click', () => {
-        addText(100, 100, 'Новый текст', 24, 'normal');
-    });
-</script>
+        canvas.addEventListener('click', (event) => {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            selectedTextIndex = textObjects.findIndex(obj => {
+                const textWidth = ctx.measureText(obj.text).width;
+                return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+            });
+            drawTextObjects();
+            if (selectedTextIndex !== -1) {
+                document.getElementById('canvas-property-panel').style.display = 'none'
+                document.getElementById('text-properties-panel').style.display = 'flex'
+                const selectedText = textObjects[selectedTextIndex];
+                document.getElementById('text-input').value = selectedText.text;
+                document.getElementById('x-coordinate').value = selectedText.x;
+                document.getElementById('y-coordinate').value = selectedText.y;
+                document.getElementById('font-size').value = selectedText.fontSize;
+                document.getElementById('font-weight').value = selectedText.fontWeight;
+            }
+        });
+
+        document.getElementById('text-input').addEventListener('input', (event) => {
+            if (selectedTextIndex !== -1) {
+                textObjects[selectedTextIndex].text = event.target.value;
+                drawTextObjects();
+            }
+        });
+
+        document.getElementById('x-coordinate').addEventListener('input', (event) => {
+            if (selectedTextIndex !== -1) {
+                const newX = parseFloat(event.target.value);
+                if (!isNaN(newX)) {
+                    textObjects[selectedTextIndex].x = newX;
+                    drawTextObjects();
+                }
+            }
+        });
+
+        document.getElementById('y-coordinate').addEventListener('input', (event) => {
+            if (selectedTextIndex !== -1) {
+                const newY = parseFloat(event.target.value);
+                if (!isNaN(newY)) {
+                    textObjects[selectedTextIndex].y = newY;
+                    drawTextObjects();
+                }
+            }
+        });
+
+        document.getElementById('font-size').addEventListener('input', (event) => {
+            if (selectedTextIndex !== -1) {
+                const newFontSize = parseInt(event.target.value);
+                if (!isNaN(newFontSize)) {
+                    textObjects[selectedTextIndex].fontSize = newFontSize;
+                    drawTextObjects();
+                }
+            }
+        });
+
+        document.getElementById('font-weight').addEventListener('change', (event) => {
+            if (selectedTextIndex !== -1) {
+                textObjects[selectedTextIndex].fontWeight = event.target.value;
+                drawTextObjects();
+            }
+        });
+
+        canvas.addEventListener('mousedown', (event) => {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            selectedTextIndex = textObjects.findIndex(obj => {
+                const textWidth = ctx.measureText(obj.text).width;
+                return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+            });
+            if (selectedTextIndex !== -1) {
+                dragStartX = mouseX;
+                dragStartY = mouseY;
+                canvas.addEventListener('mousemove', dragText);
+                canvas.addEventListener('mouseup', () => {
+                    canvas.removeEventListener('mousemove', dragText);
+                });
+            }
+        });
+
+        function dragText(event) {
+            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            const deltaX = mouseX - dragStartX;
+            const deltaY = mouseY - dragStartY;
+            textObjects[selectedTextIndex].x += deltaX;
+            textObjects[selectedTextIndex].y += deltaY;
+            dragStartX = mouseX;
+            dragStartY = mouseY;
+            drawTextObjects();
+        }
+
+        document.getElementById('edit-canvas-btn').addEventListener('click', () => {
+            document.getElementById('canvas-property-panel').style.display = 'flex'
+            document.getElementById('text-properties-panel').style.display = 'none'
+        });
+
+        document.getElementById('add-text-btn').addEventListener('click', () => {
+            addText(100, 100, 'Новый текст', 24, 'normal');
+        });
+    </script>
 </body>
 
 

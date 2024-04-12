@@ -1,180 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canvas Editor</title>
-<style>
-    #canvas-container {
-        position: relative;
-        float: left;
-        margin-right: 20px;
-    }
-    #canvas {
-        border: 1px solid #000;
-        cursor: pointer;
-    }
-    .panel {
-        float: left;
-        margin-bottom: 10px;
-    }
-    .panel input[type="text"],
-    .panel input[type="number"],
-    .panel select {
-        margin-bottom: 5px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Image Editor</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+
+        .properties-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-<div class="panel">
-    <button id="configure-canvas-btn">Настроить холст</button>
-    <div id="canvas-config" style="display: none;">
-        <label for="canvas-width">Ширина:</label><br>
-        <input type="number" id="canvas-width"><br>
-        <label for="canvas-height">Высота:</label><br>
-        <input type="number" id="canvas-height"><br>
-        <label for="canvas-color">Цвет фона:</label><br>
-        <input type="color" id="canvas-color"><br>
+    <div class="canvas-container">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <div class="properties-panel">
+            <label for="x-position">X:</label>
+            <input type="number" id="x-position" value="0">
+            <br>
+            <label for="y-position">Y:</label>
+            <input type="number" id="y-position" value="0">
+        </div>
     </div>
-</div>
-<div class="panel">
-    <button id="add-text-btn">Добавить текст</button>
-    <div id="text-properties" style="display: none;">
-        <label for="text">Текст:</label><br>
-        <input type="text" id="text"><br>
-        <label for="text-x">X:</label><br>
-        <input type="number" id="text-x"><br>
-        <label for="text-y">Y:</label><br>
-        <input type="number" id="text-y"><br>
-        <label for="font-size">Размер шрифта:</label><br>
-        <input type="number" id="font-size"><br>
-        <label for="font-weight">Жирность:</label><br>
-        <button id="bold-btn">Жирный</button>
-    </div>
-</div>
-<div id="canvas-container">
-    <canvas id="canvas"></canvas>
-</div>
+    <input type="file" id="image-upload" accept="image/*">
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageUpload = document.getElementById('image-upload');
+        const xPositionInput = document.getElementById('x-position');
+        const yPositionInput = document.getElementById('y-position');
 
-<script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let dragging = false;
-    let dragStartX, dragStartY;
-    let selectedTextIndex = -1;
-    let bold = false;
+        let image = null;
+        let drag = false;
+        let offsetX = 0;
+        let offsetY = 0;
 
-    document.getElementById('configure-canvas-btn').addEventListener('click', () => {
-        document.getElementById('canvas-config').style.display = 'block';
-    });
-
-    document.getElementById('canvas-width').addEventListener('input', () => {
-        canvas.width = parseInt(document.getElementById('canvas-width').value);
-    });
-
-    document.getElementById('canvas-height').addEventListener('input', () => {
-        canvas.height = parseInt(document.getElementById('canvas-height').value);
-    });
-
-    document.getElementById('canvas-color').addEventListener('input', () => {
-        canvas.style.backgroundColor = document.getElementById('canvas-color').value;
-    });
-
-    document.getElementById('add-text-btn').addEventListener('click', () => {
-        document.getElementById('text-properties').style.display = 'block';
-    });
-
-    canvas.addEventListener('mousedown', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        selectedTextIndex = textObjects.findIndex(obj => {
-            const textWidth = ctx.measureText(obj.text).width;
-            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
-        });
-        if (selectedTextIndex !== -1) {
-            dragging = true;
-            dragStartX = mouseX;
-            dragStartY = mouseY;
-        }
-    });
-
-    canvas.addEventListener('mousemove', (event) => {
-        if (dragging) {
-            const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-            const deltaX = mouseX - dragStartX;
-            const deltaY = mouseY - dragStartY;
-            textObjects[selectedTextIndex].x += deltaX;
-            textObjects[selectedTextIndex].y += deltaY;
-            dragStartX = mouseX;
-            dragStartY = mouseY;
-            drawTextObjects();
-        }
-    });
-
-    canvas.addEventListener('mouseup', () => {
-        dragging = false;
-    });
-
-    document.getElementById('text').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            textObjects[selectedTextIndex].text = event.target.value;
-            drawTextObjects();
-        }
-    });
-
-    document.getElementById('text-x').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newX = parseInt(event.target.value);
-            if (!isNaN(newX)) {
-                textObjects[selectedTextIndex].x = newX;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('text-y').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newY = parseInt(event.target.value);
-            if (!isNaN(newY)) {
-                textObjects[selectedTextIndex].y = newY;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('font-size').addEventListener('input', (event) => {
-        if (selectedTextIndex !== -1) {
-            const newFontSize = parseInt(event.target.value);
-            if (!isNaN(newFontSize)) {
-                textObjects[selectedTextIndex].fontSize = newFontSize;
-                drawTextObjects();
-            }
-        }
-    });
-
-    document.getElementById('bold-btn').addEventListener('click', () => {
-        if (selectedTextIndex !== -1) {
-            bold = !bold;
-            textObjects[selectedTextIndex].fontWeight = bold ? 'bold' : 'normal';
-            drawTextObjects();
-        }
-    });
-
-    const textObjects = [];
-
-    function drawTextObjects() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        textObjects.forEach((textObj, index) => {
-            ctx.fillStyle = textObj.color;
-            ctx.font = `${textObj.fontWeight} ${textObj.fontSize}px Arial`;
-            ctx.fillText(textObj.text, textObj.x, textObj.y);
-            if (index === selectedTextIndex) {
-                ctx.strokeStyle = 'blue';
-                ctx.strokeRect(textObj.x - 5, textObj.y - textObj.fontSize, ctx.measureText(textObj.text).width + 10, textObj.fontSize + 5);
+        canvas.addEventListener('mousedown', (e) => {
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
+            if (image && mouseX >= offsetX && mouseX <= offsetX + image.width && mouseY >= offsetY && mouseY <= offsetY + image.height) {
+                drag = true;
+                offsetX = mouseX - offsetX;
+                offsetY = mouseY - offsetY;
             }
         });
-    }
-</script>
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (drag) {
+                offsetX = e.offsetX - offsetX;
+                offsetY = e.offsetY - offsetY;
+                drawImage();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drag = false;
+        });
+
+        imageUpload.addEventListener('change', handleImageUpload);
+
+        function handleImageUpload(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    image = img;
+                    drawImage();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (image) {
+                ctx.drawImage(image, offsetX, offsetY);
+            }
+            updatePropertiesPanel();
+        }
+
+        function updatePropertiesPanel() {
+            xPositionInput.value = offsetX;
+            yPositionInput.value = offsetY;
+        }
+
+        xPositionInput.addEventListener('input', () => {
+            offsetX = parseInt(xPositionInput.value);
+            drawImage();
+        });
+
+        yPositionInput.addEventListener('input', () => {
+            offsetY = parseInt(yPositionInput.value);
+            drawImage();
+        });
+    </script>
 </body>
 </html>
+

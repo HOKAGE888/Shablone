@@ -73,22 +73,21 @@
 
 body {
     margin: 0px;
-    /* display: flex; */
-    /* src: url('https://img2.freepng.ru/20180628/oyz/kisspng-computer-icons-clip-art-picture-icon-4b35c922ca0473.0900079015302515548275.jpg'); */
 }
 
-.fone {
+.left-menu {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 400px;
-    position: fixed;
+     position: fixed;
     z-index: 9999999999;
     top: 0;
     left: 0;
     background-color: #212529;
     overflow-x: hidden;
     padding-top: 20px;
+    
 
 }
 
@@ -167,10 +166,13 @@ body {
 }
 
 .right-menu {
-    width: 500px;
-    background-color: #212529;
     height: 100vh;
-    z-index: 99999999999999999;
+    width: 400px;
+    z-index: 9999999999;
+    float:right;
+    background-color: #212529;
+    overflow-x: hidden;
+    padding-top: 20px;
 }
 
 .for-js-background {
@@ -292,4 +294,16 @@ body {
     font-family: 'Arial';
     font-size: 20px;
     margin: 10px 0px 0px 10px;
+}
+
+.canvas{
+    margin-left: 400px;  
+    border: 1px solid rgb(0, 0, 0);
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display:block;
+    
+
 }
