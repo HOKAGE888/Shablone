@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ЩАБЛЁН</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/edit_pattern.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
+    <script src="{{ url_for('static', filename='edit_pattern.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='scripts.js') }}"></script> -->
     <!-- <script src="{{ url_for('static', filename='edit_template.js') }}"></script> -->
-
 </head>
 
 <body bgcolor="#dee2e6">
@@ -79,8 +79,7 @@
 
 
 
-
-    <script>
+    <!-- <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -110,7 +109,7 @@
                 }
             ]
         }
-        
+         
         */
 
         const hostname = window.location.hostname;
@@ -328,8 +327,7 @@
 
         console.log(`http://${hostname}:${port}/api/template/${template_id}`)
         fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
-
-    </script>
+    </script> -->
 </body>
 
 
