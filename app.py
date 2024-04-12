@@ -158,9 +158,12 @@ def get_template(template_id):
     return jsonify({'error': 'Шаблон не найден'}), 400
   
   if request.method == 'PATCH':
-    template.json = request.json
+    print(request.json)
+    template.json = str(request.json).replace("'",'"')
     template.imagemagick = None
+    template.save()
   
+  print(template.json)
   return template.json, 200
 
 @app.route('/api/template/<int:template_id>/image', methods=['GET'])
