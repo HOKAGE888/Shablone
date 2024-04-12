@@ -2,86 +2,89 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ЩАБЛЁН</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
-  <!-- <script src="{{ url_for('static', filename='scripts.js') }}"></script> -->
-  <!-- <script src="{{ url_for('static', filename='edit_template.js') }}"></script> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЩАБЛЁН</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
+    <!-- <script src="{{ url_for('static', filename='scripts.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='edit_template.js') }}"></script> -->
 
 </head>
 
 <body bgcolor="#dee2e6">
-
-    <div class="left-menu">
-        <div class="top-element">
-            <div
-                style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
-                SOKOLOV
+    <div class="edit_app">
+        <div class="left-menu">
+            <div class="top-element">
+                <div
+                    style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold;">
+                    SOKOLOV
+                </div>
+                <hr class="liniya">
             </div>
-            <hr class="liniya">
+
+            <button class="panel" id="edit-canvas-btn">Редактирование холста</button>
+
+            <button id="add-text-btn" class="panel">Добавить текст</button>
+
+            <button class="panel" id="add-img">Добавить картинку</button>
+
+            <div class="preview">
+                <hr style="width: 80%">
+                <button id="save-btn" class="preview">Сохранить</button>
+            </div>
         </div>
 
-        <button class="panel" id="edit-canvas-btn">Редактирование холста</button>
 
-        <button id="add-text-btn" class="panel">Добавить текст</button>
+        <div class="field" id="fieldId">
+            <canvas id="canvas" class="canvas"></canvas>
+        </div>
 
-        <button class="panel" id="add-img">Добавить картинку</button>
 
-        <div class="preview">
-            <hr style="width: 80%">
-            <button id="save-btn" class="preview">Сохранить</button>
+
+        <div class="right-menu">
+            <div id="canvas-property-panel">
+                <div class="right-text">Холст</div>
+                <div class="text-right-menu">
+                    <h class="text_pole">Высота:</h>
+                    <input class="text-field__input" id="canvas-height" type="text" name="text"
+                        placeholder="Высота"><br>
+                    <h class="text_pole">Ширина:</h>
+                    <input class="text-field__input" id="canvas-width" type="text" name="text" placeholder="Ширина"><br>
+                </div>
+
+                <div class="right-text">
+                    Цвет фона
+                    <input class="cr" type="color" id="canvas-color" value="#ffffff">
+                </div>
+            </div>
+
+            <div id="text-properties-panel" style="display:none">
+                <label for="text-input">Текст:</label><br>
+                <input type="text" id="text-input"><br><br>
+                <label for="x-coordinate">X:</label><br>
+                <input type="text" id="x-coordinate"><br><br>
+                <label for="y-coordinate">Y:</label><br>
+                <input type="text" id="y-coordinate"><br><br>
+                <label for="font-size">Размер шрифта:</label><br>
+                <input type="number" id="font-size" min="1"><br><br>
+                <label for="font-weight">Жирность:</label><br>
+                <select id="font-weight">
+                    <option value="normal">Обычный</option>
+                    <option value="bold">Жирный</option>
+                </select><br><br>
+            </div>
         </div>
     </div>
 
-    
 
 
-
-
-    <div class="right-menu">
-        <div id="canvas-property-panel">
-            <div class="right-text">Холст</div>
-            <div class="text-right-menu">
-                <h class="text_pole">Высота:</h>
-                <input class="text-field__input" id="canvas-height" type="text" name="text" placeholder="Высота"><br>
-                <h class="text_pole">Ширина:</h>
-                <input class="text-field__input" id="canvas-width" type="text" name="text" placeholder="Ширина"><br>
-            </div>
-
-            <div class="right-text">
-                Цвет фона
-                <input class="cr" type="color" id="canvas-color" value="#ffffff">
-            </div>
-        </div>
-
-        <div id="text-properties-panel" style="display:none">
-            <label for="text-input">Текст:</label><br>
-            <input type="text" id="text-input"><br><br>
-            <label for="x-coordinate">X:</label><br>
-            <input type="text" id="x-coordinate"><br><br>
-            <label for="y-coordinate">Y:</label><br>
-            <input type="text" id="y-coordinate"><br><br>
-            <label for="font-size">Размер шрифта:</label><br>
-            <input type="number" id="font-size" min="1"><br><br>
-            <label for="font-weight">Жирность:</label><br>
-            <select id="font-weight">
-                <option value="normal">Обычный</option>
-                <option value="bold">Жирный</option>
-            </select><br><br>
-        </div>
-    </div>
-
-    <canvas id="canvas" class="canvas" ></canvas>
-
-    
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
-        
+
         // Пример списка объектов
         /*
         {  
@@ -109,14 +112,14 @@
         }
         
         */
-       
+
         const hostname = window.location.hostname;
         const port = window.location.port;
-        const parts =  window.location.href.split('/')
-        const template_id = parts[parts.length-1];
-        
+        const parts = window.location.href.split('/')
+        const template_id = parts[parts.length - 1];
 
-       // Массив для хранения текстов
+
+        // Массив для хранения текстов
         let canvas_data = {
             id: template_id,
             width: canvas.width,
@@ -124,29 +127,30 @@
             color: "#ffffff",
             entities: []
         };
-        
-        
+
+
         function fetchData(url, callback) {
             fetch(url)
-            .then(response => response.json())
-            .then(data => callback(data))
-            .catch(error => console.error('Ошибка загрузки данных:', error));
+                .then(response => response.json())
+                .then(data => callback(data))
+                .catch(error => console.error('Ошибка загрузки данных:', error));
         }
-            
+
         function drawObjects() {
             document.getElementById('canvas-width').value = canvas_data.width;
             canvas.width = canvas_data.width;
-            
+
             document.getElementById('canvas-height').value = canvas_data.height;
             canvas.height = canvas_data.height;
 
+            document.getElementByID("fieldId").style.margin = "50px 100px" //"calc((100lvh - " + canvas_data.height + ")/2)";
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             document.getElementById('canvas-color').value = canvas_data.color;
             canvas.style.backgroundColor = document.getElementById('canvas-color').value;
 
             canvas_data.entities.forEach((entity, index) => {
-                switch (entity.type){
+                switch (entity.type) {
                     case 'text':
                         ctx.fillStyle = '#dadada';
                         ctx.font = `normal 24px Arial`;
@@ -163,34 +167,34 @@
             });
         }
 
-        function loadTemplate(jsonData){
+        function loadTemplate(jsonData) {
             canvas_data = jsonData;
             drawObjects();
         }
 
-        
+
         let selectedIndex = -1; // Индекс выбранного
         let dragStartX, dragStartY; // Начальные координаты перетаскивания
         document.getElementById('canvas-width').value = canvas.width;
         document.getElementById('canvas-height').value = canvas.height;
-        
-        
+
+
         document.getElementById('canvas-width').addEventListener('input', () => {
             canvas_data.width = parseInt(document.getElementById('canvas-width').value);
             drawObjects();
         });
-        
+
         document.getElementById('canvas-height').addEventListener('input', () => {
             canvas_data.height = parseInt(document.getElementById('canvas-height').value);
             drawObjects();
         });
-        
+
         document.getElementById('canvas-color').addEventListener('input', () => {
             canvas_data.color = document.getElementById('canvas-color').value;
             drawObjects();
         });
-        
-        
+
+
         function addText(x, y, text, fontSize, fontWeight) {
             const defaultColor = 'black';
             const textObj = {
@@ -203,7 +207,7 @@
             canvas_data.entities.push(textObj);
             drawObjects();
         }
-        
+
         canvas.addEventListener('click', (event) => {
             const mouseX = event.clientX - canvas.getBoundingClientRect().left;
             const mouseY = event.clientY - canvas.getBoundingClientRect().top;
@@ -215,7 +219,7 @@
             if (selectedIndex !== -1) {
                 document.getElementById('canvas-property-panel').style.display = 'none'
                 document.getElementById('text-properties-panel').style.display = 'block'
-                
+
                 const selectedText = canvas_data.entities[selectedIndex];
                 document.getElementById('text-input').value = selectedText.text;
                 document.getElementById('x-coordinate').value = selectedText.x;
@@ -224,14 +228,14 @@
                 document.getElementById('font-weight').value = selectedText.fontWeight;
             }
         });
-        
+
         document.getElementById('text-input').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 canvas_data.entities[selectedIndex].text = event.target.value;
                 drawObjects();
             }
         });
-        
+
         document.getElementById('x-coordinate').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 const newX = parseFloat(event.target.value);
@@ -241,7 +245,7 @@
                 }
             }
         });
-        
+
         document.getElementById('y-coordinate').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 const newY = parseFloat(event.target.value);
@@ -251,7 +255,7 @@
                 }
             }
         });
-        
+
         document.getElementById('font-size').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 const newFontSize = parseInt(event.target.value);
@@ -261,14 +265,14 @@
                 }
             }
         });
-        
+
         document.getElementById('font-weight').addEventListener('change', (event) => {
             if (selectedIndex !== -1) {
                 canvas_data.entities[selectedIndex].fontWeight = event.target.value;
                 drawObjects();
             }
         });
-        
+
         canvas.addEventListener('mousedown', (event) => {
             const mouseX = event.clientX - canvas.getBoundingClientRect().left;
             const mouseY = event.clientY - canvas.getBoundingClientRect().top;
@@ -285,7 +289,7 @@
                 });
             }
         });
-        
+
         function dragText(event) {
             const mouseX = event.clientX - canvas.getBoundingClientRect().left;
             const mouseY = event.clientY - canvas.getBoundingClientRect().top;
@@ -297,34 +301,34 @@
             dragStartY = mouseY;
             drawObjects();
         }
-        
+
         document.getElementById('edit-canvas-btn').addEventListener('click', () => {
             document.getElementById('canvas-property-panel').style.display = 'block'
             document.getElementById('text-properties-panel').style.display = 'none'
         });
-        
+
         document.getElementById('add-text-btn').addEventListener('click', () => {
             addText(100, 100, 'Новый текст', 24, 'normal');
         });
-        
+
         document.getElementById('save-btn').addEventListener('click', () => {
             const xhr = new XMLHttpRequest();
             xhr.open("PATCH", `http://${hostname}:${port}/api/template/${template_id}`);
             xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
             xhr.onload = () => {
-            if (xhr.status == 200) {
-                const json_response = JSON.parse(xhr.responseText);
-                // window.location.href = `http://${hostname}:${port}/template/${template_id}`;
-            } else {
-                console.log(`Error: ${xhr.status}`);
-            }
+                if (xhr.status == 200) {
+                    const json_response = JSON.parse(xhr.responseText);
+                    // window.location.href = `http://${hostname}:${port}/template/${template_id}`;
+                } else {
+                    console.log(`Error: ${xhr.status}`);
+                }
             };
             xhr.send(JSON.stringify(canvas_data));
         });
 
         console.log(`http://${hostname}:${port}/api/template/${template_id}`)
         fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
-        
+
     </script>
 </body>
 
