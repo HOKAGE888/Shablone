@@ -8,6 +8,7 @@ let canvas_data;
 let selectedIndex = -1; // Индекс выбранного
 let dragStartX, dragStartY; // Начальные координаты перетаскивания
 
+// после загрузки окна
 window.onload = function(){
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
@@ -27,21 +28,25 @@ window.onload = function(){
     document.getElementById('canvas-width').value = canvas.width;
     document.getElementById('canvas-height').value = canvas.height;
     
+    // при изменении ширины хослта
     document.getElementById('canvas-width').addEventListener('input', () => {
         canvas_data.width = parseInt(document.getElementById('canvas-width').value);
         drawObjects();
     });
     
+    // при изменении высоты хоста
     document.getElementById('canvas-height').addEventListener('input', () => {
         canvas_data.height = parseInt(document.getElementById('canvas-height').value);
         drawObjects();
     });
     
+    // при измененении цвета фона хоста
     document.getElementById('canvas-color').addEventListener('input', () => {
         canvas_data.color = document.getElementById('canvas-color').value;
         drawObjects();
     });
 
+    // при клике на холст
     canvas.addEventListener('click', (event) => {
         const mouseX = event.clientX - canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
@@ -56,13 +61,14 @@ window.onload = function(){
     
             const selectedText = canvas_data.entities[selectedIndex];
             document.getElementById('text-input').value = selectedText.text;
-            document.getElementById('x-coordinate').value = selectedText.x;
-            document.getElementById('y-coordinate').value = selectedText.y;
+            document.getElementById('text-x').value = selectedText.x;
+            document.getElementById('text-y').value = selectedText.y;
             document.getElementById('font-size').value = selectedText.fontSize;
             document.getElementById('font-weight').value = selectedText.fontWeight;
         }
     });
     
+    // при изменении текста текста
     document.getElementById('text-input').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
             canvas_data.entities[selectedIndex].text = event.target.value;
@@ -70,26 +76,30 @@ window.onload = function(){
         }
     });
     
-    document.getElementById('x-coordinate').addEventListener('input', (event) => {
+    // при изменении горизонтальной координаты текста
+    document.getElementById('text-x').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
+            console.log(event.target.value, selectedIndex, canvas_data);
             const newX = parseFloat(event.target.value);
             if (!isNaN(newX)) {
-                canvas_data[selectedIndex].x = newX;
+                canvas_data.entities[selectedIndex].x = newX;
                 drawObjects();
             }
         }
     });
     
-    document.getElementById('y-coordinate').addEventListener('input', (event) => {
+    // при изменении вертикальной координаты текста
+    document.getElementById('text-y').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
             const newY = parseFloat(event.target.value);
             if (!isNaN(newY)) {
-                canvas_data[selectedIndex].y = newY;
+                canvas_data.entities[selectedIndex].y = newY;
                 drawObjects();
             }
         }
     });
     
+    // при изменении размера текста
     document.getElementById('font-size').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
             const newFontSize = parseInt(event.target.value);
@@ -100,6 +110,7 @@ window.onload = function(){
         }
     });
     
+    // при изменении жирности текста
     document.getElementById('font-weight').addEventListener('change', (event) => {
         if (selectedIndex !== -1) {
             canvas_data.entities[selectedIndex].fontWeight = event.target.value;
@@ -107,6 +118,7 @@ window.onload = function(){
         }
     });
     
+    // при опускании ЛКМ на холсте
     canvas.addEventListener('mousedown', (event) => {
         const mouseX = event.clientX - canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
@@ -124,15 +136,63 @@ window.onload = function(){
         }
     });
 
+    // при клике по кнопке Редактировать холст
     document.getElementById('edit-canvas-btn').addEventListener('click', () => {
         document.getElementById('canvas-property-panel').style.display = 'block'
         document.getElementById('text-properties-panel').style.display = 'none'
     });
     
+    // при клике по кнопке добавить текст
     document.getElementById('add-text-btn').addEventListener('click', () => {
         addText(100, 100, 'Новый текст', 24, 'normal');
     });
     
+    // приклике по кнопке добавить картинку
+    document.getElementById('add-img-btn').addEventListener('click', () => {
+        document.getElementById('file-input').click();
+    });
+
+    // при выборе изображения
+    document.getElementById('file-input').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const image = new Image();
+            image.src = URL.createObjectURL(file);
+    
+            image.onload = function() {
+                console.log('Ширина изображения:', this.width);
+                console.log('Высота изображения:', this.height);
+    
+                const width = this.width > canvas.width ? canvas.width : this.width;
+                const height = this.height > canvas.height ? canvas.height : this.height;
+
+                const formData = new FormData();
+                formData.append('image', file);
+    
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/image', true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    
+                xhr.onload = function() {
+                    const jsonResponse = JSON.parse(xhr.responseText);
+                    if (xhr.status === 200) {
+                        console.log('Изображение успешно загружено на сервер');
+                        addImg(0,0,`api/image/${jsonResponse.image}`,width,height)
+                    } else {
+                        console.error('Произошла ошибка при загрузке изображения:', xhr.status, jsonResponse);
+                    }
+                };
+    
+                xhr.onerror = function() {
+                    console.error('Произошла ошибка при отправке запроса');
+                };
+    
+                xhr.send(formData);
+            };
+        }
+    });
+
+    // при клике по кнопке сохранить
     document.getElementById('save-btn').addEventListener('click', () => {
         const xhr = new XMLHttpRequest();
         xhr.open("PATCH", `http://${hostname}:${port}/api/template/${template_id}`);
@@ -148,7 +208,6 @@ window.onload = function(){
         xhr.send(JSON.stringify(canvas_data));
     });
     
-    console.log(`http://${hostname}:${port}/api/template/${template_id}`)
     fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
 }
 
@@ -163,7 +222,6 @@ window.onload = function(){
     "entities": [
         {
             "type":"image",
-            "id": 1,
             "url": "/api/image/1",
             "width": 100,
             "height": 100,
@@ -181,6 +239,7 @@ window.onload = function(){
 }
  
 */
+
 
 function fetchData(url, callback) {
     fetch(url)
@@ -206,7 +265,7 @@ function drawObjects() {
         switch (entity.type) {
             case 'text':
                 ctx.fillStyle = '#dadada';
-                ctx.font = `normal 24px Arial`;
+                ctx.font = `${entity.fontWeight} ${entity.fontSize}px Arial`;
                 ctx.fillText(entity.text, entity.x, entity.y);
                 if (index === selectedIndex) {
                     ctx.strokeStyle = 'blue';
@@ -214,7 +273,12 @@ function drawObjects() {
                 }
                 break;
             case 'image':
-                
+                const image = new Image();
+                image.onload = function(){
+                    ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
+                }
+                console.log(`http://${hostname}:${port}/${entity.url}`)
+                image.src = `http://${hostname}:${port}/${entity.url}`;
                 break;
         }
     });
@@ -226,15 +290,28 @@ function loadTemplate(jsonData) {
 }
 
 function addText(x, y, text, fontSize, fontWeight) {
-    const defaultColor = 'black';
     const textObj = {
         type: 'text',
         text: text,
         fontSize: fontSize,
+        fontWeight: fontWeight,
         x: x,
         y: y
     };
     canvas_data.entities.push(textObj);
+    drawObjects();
+}
+
+function addImg(x, y, imgUrl, width, height){
+    const imgObj = {
+        type:"image",
+        url: imgUrl,
+        width: width,
+        height: height,
+        x: x,
+        y: y
+    };
+    canvas_data.entities.push(imgObj);
     drawObjects();
 }
 

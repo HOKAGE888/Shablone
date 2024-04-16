@@ -182,26 +182,22 @@ def get_template_image(template_id):
 
 
 @app.route('/api/image', methods=['POST'])
-def upload_file(template_id):
+def upload_file():
     """Загрузить изображения на сервер"""
 
+    print(request.files)
+
     # Проверка наличия файла в запросе
-    if 'file' not in request.files:
+    if 'image' not in request.files:
         return jsonify({'error': 'Файл в запросе не найден'}), 400
 
-    file = request.files['file']
-
-    # Проверка наличия имени файла
-    if file.filename == '':
-        return jsonify({'error': 'Имя файла не найдено'}), 400
+    file = request.files['image']
 
     # Чтение содержимого файла
     content = file.read()
 
-    template_id = request.form.get('template_id')
-
     # Сохранение файла в базу данных
-    image = Image.create(template_id=template_id, content=content)
+    image = Image.create(content=content)
 
     return jsonify({'message': 'Всё прекрасно. Файл загружен.', 'image': image.id}), 200
 

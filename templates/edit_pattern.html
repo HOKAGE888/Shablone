@@ -27,8 +27,9 @@
 
             <button id="add-text-btn" class="panel">Добавить текст</button>
 
-            <button class="panel" id="add-img">Добавить картинку</button>
-
+            <input type="file" id="file-input" accept=".png" style="display: none;">
+            <button class="panel" id="add-img-btn">Добавить картинку</button>
+            
             <div class="preview">
                 <hr style="width: 80%">
                 <button id="save-btn" class="preview">Сохранить</button>
@@ -62,10 +63,10 @@
             <div id="text-properties-panel" style="display:none">
                 <label for="text-input">Текст:</label><br>
                 <input type="text" id="text-input"><br><br>
-                <label for="x-coordinate">X:</label><br>
-                <input type="text" id="x-coordinate"><br><br>
-                <label for="y-coordinate">Y:</label><br>
-                <input type="text" id="y-coordinate"><br><br>
+                <label for="text-x">X:</label><br>
+                <input type="text" id="text-x"><br><br>
+                <label for="text-y">Y:</label><br>
+                <input type="text" id="text-y"><br><br>
                 <label for="font-size">Размер шрифта:</label><br>
                 <input type="number" id="font-size" min="1"><br><br>
                 <label for="font-weight">Жирность:</label><br>
@@ -221,8 +222,8 @@
 
                 const selectedText = canvas_data.entities[selectedIndex];
                 document.getElementById('text-input').value = selectedText.text;
-                document.getElementById('x-coordinate').value = selectedText.x;
-                document.getElementById('y-coordinate').value = selectedText.y;
+                document.getElementById('text-x').value = selectedText.x;
+                document.getElementById('text-y').value = selectedText.y;
                 document.getElementById('font-size').value = selectedText.fontSize;
                 document.getElementById('font-weight').value = selectedText.fontWeight;
             }
@@ -235,7 +236,7 @@
             }
         });
 
-        document.getElementById('x-coordinate').addEventListener('input', (event) => {
+        document.getElementById('text-x').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 const newX = parseFloat(event.target.value);
                 if (!isNaN(newX)) {
@@ -245,7 +246,7 @@
             }
         });
 
-        document.getElementById('y-coordinate').addEventListener('input', (event) => {
+        document.getElementById('text-y').addEventListener('input', (event) => {
             if (selectedIndex !== -1) {
                 const newY = parseFloat(event.target.value);
                 if (!isNaN(newY)) {
