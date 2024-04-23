@@ -7,6 +7,7 @@ let template_id;
 let canvas_data;
 let selectedIndex = -1; // Индекс выбранного
 let dragStartX, dragStartY; // Начальные координаты перетаскивания
+const resizeHandleSize = 20; // Размер элементов для изменения размера
 
 // после загрузки окна
 window.onload = function(){
@@ -48,24 +49,7 @@ window.onload = function(){
 
     // при клике на холст
     canvas.addEventListener('click', (event) => {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        selectedIndex = canvas_data.entities.findIndex(obj => {
-            const textWidth = ctx.measureText(obj.text).width;
-            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
-        });
-        drawObjects();
-        if (selectedIndex !== -1) {
-            document.getElementById('canvas-property-panel').style.display = 'none'
-            document.getElementById('text-properties-panel').style.display = 'block'
-    
-            const selectedText = canvas_data.entities[selectedIndex];
-            document.getElementById('text-input').value = selectedText.text;
-            document.getElementById('text-x').value = selectedText.x;
-            document.getElementById('text-y').value = selectedText.y;
-            document.getElementById('font-size').value = selectedText.fontSize;
-            document.getElementById('font-weight').value = selectedText.fontWeight;
-        }
+       
     });
     
     // при изменении текста текста
@@ -87,6 +71,7 @@ window.onload = function(){
             }
         }
     });
+    
     
     // при изменении вертикальной координаты текста
     document.getElementById('text-y').addEventListener('input', (event) => {
@@ -118,15 +103,92 @@ window.onload = function(){
         }
     });
     
+
+
+    // при изменении горизонтальной координаты изображения
+    document.getElementById('image-x').addEventListener('input', (event) => {
+        if (selectedIndex !== -1) {
+            console.log(event.target.value, selectedIndex, canvas_data);
+            const newX = parseFloat(event.target.value);
+            if (!isNaN(newX)) {
+                canvas_data.entities[selectedIndex].x = newX;
+                drawObjects();
+            }
+        }
+    });
+
+
+    // при изменении вертикальной координаты изображения
+    document.getElementById('image-y').addEventListener('input', (event) => {
+        if (selectedIndex !== -1) {
+            const newY = parseFloat(event.target.value);
+            if (!isNaN(newY)) {
+                canvas_data.entities[selectedIndex].y = newY;
+                drawObjects();
+            }
+        }
+    });
+
+    // при изменении ширины изображения
+    document.getElementById('image-width').addEventListener('input', (event) => {
+        if (selectedIndex !== -1) {
+            console.log(event.target.value, selectedIndex, canvas_data);
+            const newX = parseFloat(event.target.value);
+            if (!isNaN(newX)) {
+                canvas_data.entities[selectedIndex].width = newX;
+                drawObjects();
+            }
+        }
+    });
+
+
+    // при изменении высоты изображения
+    document.getElementById('image-height').addEventListener('input', (event) => {
+        if (selectedIndex !== -1) {
+            const newY = parseFloat(event.target.value);
+            if (!isNaN(newY)) {
+                canvas_data.entities[selectedIndex].height = newY;
+                drawObjects();
+            }
+        }
+    });
+
+
     // при опускании ЛКМ на холсте
     canvas.addEventListener('mousedown', (event) => {
         const mouseX = event.clientX - canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        selectedIndex = canvas_data.entities.findIndex(obj => {
-            const textWidth = ctx.measureText(obj.text).width;
-            return mouseX >= obj.x && mouseX <= obj.x + textWidth && mouseY >= obj.y - obj.fontSize && mouseY <= obj.y;
+        selectedIndex = canvas_data.entities.findIndex(entity => {
+            const textWidth = ctx.measureText(entity.text).width;
+            if (entity.type === 'text')
+                return mouseX >= entity.x && mouseX <= entity.x + textWidth && mouseY >= entity.y - entity.fontSize && mouseY <= entity.y;
+            else if (entity.type === 'image')
+                return mouseX >= entity.x && mouseX <= entity.x + entity.width && mouseY >= entity.y && mouseY <= entity.y + entity.height;
         });
         if (selectedIndex !== -1) {
+            const entity = canvas_data.entities[selectedIndex];
+
+            document.getElementById('canvas-property-panel').style.display = 'none'
+            
+            if(entity.type === 'text'){
+                document.getElementById('image-properties-panel').style.display = 'none'
+                document.getElementById('text-properties-panel').style.display = 'block'
+                document.getElementById('text-input').value = entity.text;
+                document.getElementById('text-x').value = entity.x;
+                document.getElementById('text-y').value = entity.y;
+                document.getElementById('font-size').value = entity.fontSize;
+                document.getElementById('font-weight').value = entity.fontWeight;
+            }
+            else if(entity.type === 'image'){
+                document.getElementById('image-properties-panel').style.display = 'block'
+                document.getElementById('text-properties-panel').style.display = 'none'
+                document.getElementById('image-x').value = entity.x;
+                document.getElementById('image-y').value = entity.y;
+                document.getElementById('image-height').value = entity.height;
+                document.getElementById('image-width').value = entity.width;
+            }
+
+
             dragStartX = mouseX;
             dragStartY = mouseY;
             canvas.addEventListener('mousemove', dragText);
@@ -134,6 +196,12 @@ window.onload = function(){
                 canvas.removeEventListener('mousemove', dragText);
             });
         }
+        else{
+            document.getElementById('canvas-property-panel').style.display = 'block'
+            document.getElementById('text-properties-panel').style.display = 'none'
+            document.getElementById('image-properties-panel').style.display = 'none'
+        }
+        drawObjects();
     });
 
     // при клике по кнопке Редактировать холст
@@ -208,6 +276,28 @@ window.onload = function(){
         xhr.send(JSON.stringify(canvas_data));
     });
     
+    document.getElementById('delete-text').addEventListener('click', function() {
+        if (selectedIndex >= 0 && selectedIndex < canvas_data.entities.length) {
+            canvas_data.entities.splice(selectedIndex, 1);
+            selectedIndex = -1;
+            document.getElementById('canvas-property-panel').style.display = 'block'
+            document.getElementById('text-properties-panel').style.display = 'none'
+            document.getElementById('image-properties-panel').style.display = 'none'
+            drawObjects();
+        }
+    });
+
+    document.getElementById('delete-image').addEventListener('click', function() {
+        if (selectedIndex >= 0 && selectedIndex < canvas_data.entities.length) {
+            canvas_data.entities.splice(selectedIndex, 1);
+            selectedIndex = -1;
+            document.getElementById('canvas-property-panel').style.display = 'block'
+            document.getElementById('text-properties-panel').style.display = 'none'
+            document.getElementById('image-properties-panel').style.display = 'none'
+            drawObjects();
+        }
+    });
+
     fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
 }
 
@@ -233,7 +323,7 @@ window.onload = function(){
             "text": "wello world",
             "fontSize": 2,
             "x": 0,
-            "y": 0p
+            "y": 0
         }
     ]
 }
@@ -273,12 +363,31 @@ function drawObjects() {
                 }
                 break;
             case 'image':
-                const image = new Image();
-                image.onload = function(){
-                    ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
+                if ('image' in entity){
+                    ctx.drawImage(entity.image, entity.x, entity.y, entity.width, entity.height);
+                }else{
+                    const image = new Image();
+                    image.onload = function(){
+                        ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
+                        entity['image'] = image
+                    }
+                    console.log(`http://${hostname}:${port}/${entity.url}`)
+                    image.src = `http://${hostname}:${port}/${entity.url}`;
                 }
-                console.log(`http://${hostname}:${port}/${entity.url}`)
-                image.src = `http://${hostname}:${port}/${entity.url}`;
+                console.log(selectedIndex)
+                if (selectedIndex === index){
+                    const handles = [
+                        { x: entity.x - resizeHandleSize / 2, y: entity.y - resizeHandleSize / 2 }, // Верхний левый угол
+                        { x: entity.x + entity.width - resizeHandleSize / 2, y: entity.y - resizeHandleSize / 2 }, // Верхний правый угол
+                        { x: entity.x + entity.width - resizeHandleSize / 2, y: entity.y + entity.height - resizeHandleSize / 2 }, // Нижний правый угол
+                        { x: entity.x - resizeHandleSize / 2, y: entity.y + entity.height - resizeHandleSize / 2 } // Нижний левый угол
+                    ];
+                    handles.forEach(handle => {
+                        ctx.beginPath();
+                        ctx.arc(handle.x + resizeHandleSize / 2, handle.y + resizeHandleSize / 2, resizeHandleSize / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                }
                 break;
         }
     });

@@ -159,6 +159,9 @@ def get_template(template_id):
   
   if request.method == 'PATCH':
     print(request.json)
+    for entity in request.json['entities']:
+      if entity['type'] == 'image' and 'image' in entity:
+        del entity['image']
     template.json = str(request.json).replace("'",'"')
     template.imagemagick = None
     template.save()

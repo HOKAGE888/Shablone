@@ -62,28 +62,38 @@
 
             <div id="text-properties-panel" style="display:none">
                 <div class="right-text">Редоктирование текста</div>
-                <div class="text-right-menu"><h class="text_pole">Текст:</h>
-                    <!-- <label for="text-input">Текст:</label><br> -->
+                <div class="text-right-menu">
+                    <h class="text_pole">Текст:</h>
                     <input class="text-field__input" type="text" id="text-input"><br>
                     <h class="text_pole">По горизонтали:</h>
-                    <!-- <label for="text-x">X:</label><br> -->
                     <input style="width:25%" class="text-field__input" type="text" id="text-x"><br>
                     <h class="text_pole">По вертикали:</h>
-                    <!-- <label for="text-y">Y:</label><br> -->
                     <input style="width:25%" class="text-field__input" type="text" id="text-y"><br>
                     <h class="text_pole">Размер шрифта:</h>
-                    <!-- <label for="font-size">Размер шрифта:</label><br> -->
                     <input style="width:25%" class="text-field__input" type="number" id="font-size" min="1"><br>
                     <h class="text_pole">Жирность:</h>
-                    <!-- <label for="font-weight">Жирность:</label><br> -->
                     <select class="filter" id="font-weight">
                         <option value="normal">Обычный</option>
                         <option value="bold">Жирный</option>
                     </select>
-                    <button class="delete">Удалить</button>
+                    <button class="delete" id="delete-text">Удалить</button>
                 </div>
             </div>
 
+            <div id="image-properties-panel" style="display:none">
+                <div class="right-text">Редоктирование изменения</div>
+                <div class="text-right-menu">
+                    <h class="text_pole">По горизонтали:</h>
+                    <input style="width:25%" class="text-field__input" type="text" id="image-x"><br>
+                    <h class="text_pole">По вертикали:</h>
+                    <input style="width:25%" class="text-field__input" type="text" id="image-y"><br>
+                    <h class="text_pole">Ширина:</h>
+                    <input style="width:25%" class="text-field__input" type="text" id="image-width"><br>
+                    <h class="text_pole">Выссота:</h>
+                    <input style="width:25%" class="text-field__input" type="text" id="image-height"><br>
+                    <button class="delete" id="delete-image">Удалить</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>
