@@ -154,7 +154,8 @@ body {
     font-family: Montserrat, Helvetica, sans-serif; 
     font-size: 20px; 
     color: #ffffff; 
-    text-align: center; margin-bottom: 10px;
+    text-align: center; 
+    margin-bottom: 10px;
     margin-top: 10px;
     
 }
@@ -189,6 +190,7 @@ body {
     border: none;
     cursor: pointer;
 }
+
 .cr::-webkit-color-swatch{
     border-radius: 50%;
 }
