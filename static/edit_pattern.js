@@ -7,7 +7,7 @@ let template_id;
 let canvas_data;
 let selectedIndex = -1; // Индекс выбранного
 let dragStartX, dragStartY; // Начальные координаты перетаскивания
-const resizeHandleSize = 20; // Размер элементов для изменения размера
+const resizeHandleSize = 10; // Размер элементов для изменения размера
 
 // после загрузки окна
 window.onload = function(){
@@ -63,7 +63,6 @@ window.onload = function(){
     // при изменении горизонтальной координаты текста
     document.getElementById('text-x').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
-            console.log(event.target.value, selectedIndex, canvas_data);
             const newX = parseFloat(event.target.value);
             if (!isNaN(newX)) {
                 canvas_data.entities[selectedIndex].x = newX;
@@ -103,12 +102,18 @@ window.onload = function(){
         }
     });
     
+    // при изменении wцвета текста
+    document.getElementById('text-color').addEventListener('change', (event) => {
+        if (selectedIndex !== -1) {
+            canvas_data.entities[selectedIndex].color = event.target.value;
+            drawObjects();
+        }
+    });
 
 
     // при изменении горизонтальной координаты изображения
     document.getElementById('image-x').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
-            console.log(event.target.value, selectedIndex, canvas_data);
             const newX = parseFloat(event.target.value);
             if (!isNaN(newX)) {
                 canvas_data.entities[selectedIndex].x = newX;
@@ -132,7 +137,6 @@ window.onload = function(){
     // при изменении ширины изображения
     document.getElementById('image-width').addEventListener('input', (event) => {
         if (selectedIndex !== -1) {
-            console.log(event.target.value, selectedIndex, canvas_data);
             const newX = parseFloat(event.target.value);
             if (!isNaN(newX)) {
                 canvas_data.entities[selectedIndex].width = newX;
@@ -158,6 +162,31 @@ window.onload = function(){
     canvas.addEventListener('mousedown', (event) => {
         const mouseX = event.clientX - canvas.getBoundingClientRect().left;
         const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        if (selectedIndex !== -1 && canvas_data.entities[selectedIndex].type === 'image'){
+            const image = canvas_data.entities[selectedIndex];
+            const handleIndex = getResizeHandleIndex(mouseX, mouseY, image);
+            if (handleIndex !== -1) {
+                dragStartX = mouseX;
+                dragStartY = mouseY;
+                canvas.addEventListener('mousemove', resizeImage);
+                canvas.addEventListener('mouseup', () => {
+                    canvas.removeEventListener('mousemove', resizeImage);
+                    if (selectedIndex !== -1 && canvas_data.entities[selectedIndex].type === 'image'){
+                        const image = canvas_data.entities[selectedIndex];
+                        if (image.width < 0){
+                            image.x += image.width;
+                            image.width *= -1;
+                        }
+                        if (image.height < 0){
+                            image.y += image.height;
+                            image.height *= -1;
+                        }
+                    }
+                });
+                return
+            }
+        }
+        
         selectedIndex = canvas_data.entities.findIndex(entity => {
             const textWidth = ctx.measureText(entity.text).width;
             if (entity.type === 'text')
@@ -165,9 +194,9 @@ window.onload = function(){
             else if (entity.type === 'image')
                 return mouseX >= entity.x && mouseX <= entity.x + entity.width && mouseY >= entity.y && mouseY <= entity.y + entity.height;
         });
+
         if (selectedIndex !== -1) {
             const entity = canvas_data.entities[selectedIndex];
-
             document.getElementById('canvas-property-panel').style.display = 'none'
             
             if(entity.type === 'text'){
@@ -178,6 +207,7 @@ window.onload = function(){
                 document.getElementById('text-y').value = entity.y;
                 document.getElementById('font-size').value = entity.fontSize;
                 document.getElementById('font-weight').value = entity.fontWeight;
+                document.getElementById('text-color').value = entity.color;
             }
             else if(entity.type === 'image'){
                 document.getElementById('image-properties-panel').style.display = 'block'
@@ -188,13 +218,13 @@ window.onload = function(){
                 document.getElementById('image-width').value = entity.width;
             }
 
-
             dragStartX = mouseX;
             dragStartY = mouseY;
-            canvas.addEventListener('mousemove', dragText);
+            canvas.addEventListener('mousemove', moveObject);
             canvas.addEventListener('mouseup', () => {
-                canvas.removeEventListener('mousemove', dragText);
+                canvas.removeEventListener('mousemove', moveObject);
             });
+
         }
         else{
             document.getElementById('canvas-property-panel').style.display = 'block'
@@ -212,7 +242,7 @@ window.onload = function(){
     
     // при клике по кнопке добавить текст
     document.getElementById('add-text-btn').addEventListener('click', () => {
-        addText(100, 100, 'Новый текст', 24, 'normal');
+        addText(100, 100, 'Новый текст', 24, 'normal', "#ffffff");
     });
     
     // приклике по кнопке добавить картинку
@@ -228,8 +258,6 @@ window.onload = function(){
             image.src = URL.createObjectURL(file);
     
             image.onload = function() {
-                console.log('Ширина изображения:', this.width);
-                console.log('Высота изображения:', this.height);
     
                 const width = this.width > canvas.width ? canvas.width : this.width;
                 const height = this.height > canvas.height ? canvas.height : this.height;
@@ -244,7 +272,6 @@ window.onload = function(){
                 xhr.onload = function() {
                     const jsonResponse = JSON.parse(xhr.responseText);
                     if (xhr.status === 200) {
-                        console.log('Изображение успешно загружено на сервер');
                         addImg(0,0,`api/image/${jsonResponse.image}`,width,height)
                     } else {
                         console.error('Произошла ошибка при загрузке изображения:', xhr.status, jsonResponse);
@@ -266,11 +293,8 @@ window.onload = function(){
         xhr.open("PATCH", `http://${hostname}:${port}/api/template/${template_id}`);
         xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
         xhr.onload = () => {
-            if (xhr.status == 200) {
-                const json_response = JSON.parse(xhr.responseText);
-                // window.location.href = `http://${hostname}:${port}/template/${template_id}`;
-            } else {
-                console.log(`Error: ${xhr.status}`);
+            if (xhr.status !== 200) {
+                console.error(`Error: ${xhr.status}`);
             }
         };
         xhr.send(JSON.stringify(canvas_data));
@@ -339,6 +363,7 @@ function fetchData(url, callback) {
 }
 
 function drawObjects() {
+    
     document.getElementById('canvas-width').value = canvas_data.width;
     canvas.width = canvas_data.width;
 
@@ -352,9 +377,11 @@ function drawObjects() {
     canvas.style.backgroundColor = document.getElementById('canvas-color').value;
 
     canvas_data.entities.forEach((entity, index) => {
+
+        
         switch (entity.type) {
             case 'text':
-                ctx.fillStyle = '#dadada';
+                ctx.fillStyle = entity.color;
                 ctx.font = `${entity.fontWeight} ${entity.fontSize}px Arial`;
                 ctx.fillText(entity.text, entity.x, entity.y);
                 if (index === selectedIndex) {
@@ -371,20 +398,19 @@ function drawObjects() {
                         ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
                         entity['image'] = image
                     }
-                    console.log(`http://${hostname}:${port}/${entity.url}`)
                     image.src = `http://${hostname}:${port}/${entity.url}`;
                 }
-                console.log(selectedIndex)
                 if (selectedIndex === index){
                     const handles = [
-                        { x: entity.x - resizeHandleSize / 2, y: entity.y - resizeHandleSize / 2 }, // Верхний левый угол
-                        { x: entity.x + entity.width - resizeHandleSize / 2, y: entity.y - resizeHandleSize / 2 }, // Верхний правый угол
-                        { x: entity.x + entity.width - resizeHandleSize / 2, y: entity.y + entity.height - resizeHandleSize / 2 }, // Нижний правый угол
-                        { x: entity.x - resizeHandleSize / 2, y: entity.y + entity.height - resizeHandleSize / 2 } // Нижний левый угол
+                        { x: entity.x, y: entity.y}, // Верхний левый угол
+                        { x: entity.x + entity.width, y: entity.y}, // Верхний правый угол
+                        { x: entity.x + entity.width, y: entity.y + entity.height}, // Нижний правый угол
+                        { x: entity.x, y: entity.y + entity.height} // Нижний левый угол
                     ];
                     handles.forEach(handle => {
                         ctx.beginPath();
-                        ctx.arc(handle.x + resizeHandleSize / 2, handle.y + resizeHandleSize / 2, resizeHandleSize / 2, 0, Math.PI * 2);
+                        ctx.fillStyle = '#000000';
+                        ctx.arc(handle.x , handle.y, resizeHandleSize, 0, Math.PI * 2);
                         ctx.fill();
                     });
                 }
@@ -398,9 +424,10 @@ function loadTemplate(jsonData) {
     drawObjects();
 }
 
-function addText(x, y, text, fontSize, fontWeight) {
+function addText(x, y, text, fontSize, fontWeight, color) {
     const textObj = {
         type: 'text',
+        color:color,
         text: text,
         fontSize: fontSize,
         fontWeight: fontWeight,
@@ -425,7 +452,7 @@ function addImg(x, y, imgUrl, width, height){
 }
 
 
-function dragText(event) {
+function moveObject(event) {
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
     const deltaX = mouseX - dragStartX;
@@ -435,4 +462,60 @@ function dragText(event) {
     dragStartX = mouseX;
     dragStartY = mouseY;
     drawObjects();
+}
+
+// Получение индекса элемента для изменения размера
+function getResizeHandleIndex(x, y, entity) {
+    const handles = [
+        { x: entity.x, y: entity.y}, // Верхний левый угол
+        { x: entity.x + entity.width, y: entity.y}, // Верхний правый угол
+        { x: entity.x + entity.width, y: entity.y + entity.height}, // Нижний правый угол
+        { x: entity.x, y: entity.y + entity.height} // Нижний левый угол
+    ];
+    for (let i = 0; i < handles.length; i++) {
+        const handle = handles[i];
+        const dx = handle.x - x;
+        const dy = handle.y - y;
+        if (Math.sqrt(dx * dx + dy * dy) <= resizeHandleSize) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Функция для изменения размера картинки
+function resizeImage(event) {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    const selectedImage = canvas_data.entities[selectedIndex];
+    const deltaX = mouseX - dragStartX;
+    const deltaY = mouseY - dragStartY;
+    const handleIndex = getResizeHandleIndex(mouseX, mouseY, selectedImage);
+    if (handleIndex !== -1) {
+        switch (handleIndex) {
+            case 0: // Верхний левый угол
+                selectedImage.x += deltaX;
+                selectedImage.y += deltaY;
+                selectedImage.width -= deltaX;
+                selectedImage.height -= deltaY;
+                break;
+            case 1: // Верхний правый угол
+                selectedImage.y += deltaY;
+                selectedImage.width += deltaX;
+                selectedImage.height -= deltaY;
+                break;
+            case 2: // Нижний правый угол
+                selectedImage.width += deltaX;
+                selectedImage.height += deltaY;
+                break;
+            case 3: // Нижний левый угол
+                selectedImage.x += deltaX;
+                selectedImage.width -= deltaX;
+                selectedImage.height += deltaY;
+                break;
+        }
+        drawObjects();
+    }
+    dragStartX = mouseX;
+    dragStartY = mouseY;
 }
