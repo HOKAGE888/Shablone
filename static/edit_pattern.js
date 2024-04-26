@@ -242,7 +242,7 @@ window.onload = function(){
     
     // при клике по кнопке добавить текст
     document.getElementById('add-text-btn').addEventListener('click', () => {
-        addText(100, 100, 'Новый текст', 24, 'normal', "#ffffff");
+        addText(100, 100, 'Новый текст', 24, 'normal', "#000000");
     });
     
     // приклике по кнопке добавить картинку

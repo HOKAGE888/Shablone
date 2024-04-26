@@ -25,6 +25,7 @@ body {
     background-color: #212529;
     overflow-x: hidden;
     padding-top: 20px;
+    min-width: 350px;
     
 
 }
@@ -51,6 +52,7 @@ body {
     overflow-x: hidden;
     padding-top: 20px;
     cursor: default;
+    min-width: 350px;
 }
 
 .panel {
@@ -189,6 +191,8 @@ body {
     height: 40px;
     border: none;
     cursor: pointer;
+    margin-right: calc(100% - 200px);
+    margin-top: 5px;
 }
 
 .cr::-webkit-color-swatch{
