@@ -93,7 +93,15 @@ window.onload = function(){
             }
         }
     });
-    
+ 
+    // при изменении жирности текста
+    document.getElementById('font').addEventListener('change', (event) => {
+        if (selectedIndex !== -1) {
+            canvas_data.entities[selectedIndex].font = event.target.value;
+            drawObjects();
+        }
+    });
+
     // при изменении жирности текста
     document.getElementById('font-weight').addEventListener('change', (event) => {
         if (selectedIndex !== -1) {
@@ -101,8 +109,9 @@ window.onload = function(){
             drawObjects();
         }
     });
+
     
-    // при изменении wцвета текста
+    // при изменении цвета текста
     document.getElementById('text-color').addEventListener('change', (event) => {
         if (selectedIndex !== -1) {
             canvas_data.entities[selectedIndex].color = event.target.value;
@@ -205,6 +214,7 @@ window.onload = function(){
                 document.getElementById('text-input').value = entity.text;
                 document.getElementById('text-x').value = entity.x;
                 document.getElementById('text-y').value = entity.y;
+                document.getElementById('font').value = entity.font;
                 document.getElementById('font-size').value = entity.fontSize;
                 document.getElementById('font-weight').value = entity.fontWeight;
                 document.getElementById('text-color').value = entity.color;
@@ -272,7 +282,7 @@ window.onload = function(){
                 xhr.onload = function() {
                     const jsonResponse = JSON.parse(xhr.responseText);
                     if (xhr.status === 200) {
-                        addImg(0,0,`api/image/${jsonResponse.image}`,width,height)
+                        addImg(0,0,`api/image/${jsonResponse.image}`,width,height,jsonResponse.image)
                     } else {
                         console.error('Произошла ошибка при загрузке изображения:', xhr.status, jsonResponse);
                     }
@@ -382,7 +392,7 @@ function drawObjects() {
         switch (entity.type) {
             case 'text':
                 ctx.fillStyle = entity.color;
-                ctx.font = `${entity.fontWeight} ${entity.fontSize}px Arial`;
+                ctx.font = `${entity.fontWeight} ${entity.fontSize}px ${entity.font}`;
                 ctx.fillText(entity.text, entity.x, entity.y);
                 if (index === selectedIndex) {
                     ctx.strokeStyle = 'blue';
@@ -429,6 +439,7 @@ function addText(x, y, text, fontSize, fontWeight, color) {
         type: 'text',
         color:color,
         text: text,
+        font: 'Arial',
         fontSize: fontSize,
         fontWeight: fontWeight,
         x: x,
@@ -438,9 +449,10 @@ function addText(x, y, text, fontSize, fontWeight, color) {
     drawObjects();
 }
 
-function addImg(x, y, imgUrl, width, height){
+function addImg(x, y, imgUrl, width, height, id){
     const imgObj = {
         type:"image",
+        id:id,
         url: imgUrl,
         width: width,
         height: height,

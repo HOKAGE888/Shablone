@@ -5,35 +5,41 @@
     align-items: center;
     height: 100vh;
     width: 50vw;
-    /* background-color: #212529; */
+    background-color: #212529;
 }
 
-.black {
-    background-color: #257ae8;
-    width: 30px;
+.top-element{
+    font-family: Montserrat, Helvetica, sans-serif; 
+    font-size: 35px; color: #ffffff; 
+    text-align: center; 
+    font-weight: bold; 
+    cursor: default;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .btn {
-    background-color: #257ae8;
+    background-color: #212529;
     width: 20vw;
     height: 50px;
-    border-radius: 20px;
-    color: white;
     text-align: center;
-    font-size: 2em;
-    margin: 30px 50px 0px 50px;
-    font-weight: bold;
-    font-family: 'Arial';
     font-size: 28px;
-    border: 5px solid #257ae8;
-    transition: 1s;
+    font-family: 'Montserrat';
+    color: #ffffff;
+    background: none;
+    margin: 1px 45px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    border: #ffffff00 solid 3px;
+    border-right: 0px;
+    border-left: 0px;
+    transition: 0.5s;
 }
 
 .btn:hover {
-    border-radius: 10px;
-    background-color: white;
-    outline: 2px solid linear-gradient(90deg, #257ae8, #7aadf0, #a1c1eb, #ffffff, #ffffff);
-    color: rgb(0, 0, 0);
+    border-right: 0px;
+    border-left: 0px;
+    border-color: white;
 }
 
 .import {
@@ -67,7 +73,6 @@ body {
 }
 
 .title {
-    background-color: #257ae8;
     color: white;
     font-weight: bold;
     font-family: 'Arial';

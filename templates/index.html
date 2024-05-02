@@ -7,6 +7,7 @@
   <title>ФОТОЩЁП</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/index.css') }}">
   <script src="{{ url_for('static', filename='po.js') }}"></script>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
 
 </head>
 
@@ -26,96 +27,18 @@
   <div class="black"></div>
   <div class="shabloni">
     <div class="title">Шаблоны</div>
-        
+
     <div>
       <section>
-        <select class="filter">
-          <option>Фильтр</option>
-          <option>Серьги</option>
-          <option>Кольца</option>
-          <option>Браслеты</option>
-          <option>Подвески</option>
-          <option>Шармы</option>
-          <option>Цепи</option>
-          <option>Броши</option>
-          <option>Колье</option>
-          <option>Пирсинг</option>
-          <option>Запонки</option>
-          <option>Сувенирная продукция</option>
-          <option>Брелоки</option>
-          <option>Зажимы для галстука</option>
-          <option>Заколки</option>
-          <option>Часы</option>
-          <option>Столовое серебро</option>
-          <option>Столовые приборы</option>
-          <option>Посуда</option>
-          <option>Погремушки</option>
-        </select>
+        <select class="filter" id="brand_filter"></select>
+        <select class="filter" id="producttype_filter"></select>
+        <select class="filter" id="productsubtype_filter"></select>
+        <select class="filter" id="metaltype_filter"></select><br>
       </section>
     </div>
 
     <div class="struct_shablone">
-      <div class="shablone ">
-  
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div><div class="shablone">
-        
-      </div>
+      <div class="shablone " id="schablones"></div>
     </div>
   </div>
   
@@ -198,6 +121,11 @@
       fetchData(apiUrl+'productsubtype', loadComboBox, 'productsubtype');
       fetchData(apiUrl+'producttype', loadComboBox, 'producttype');
       fetchData(apiUrl+'metaltype', loadComboBox, 'metaltype');
+
+      fetchData(apiUrl+'brand', loadComboBox, 'brand_filter');
+      fetchData(apiUrl+'productsubtype', loadComboBox, 'productsubtype_filter');
+      fetchData(apiUrl+'producttype', loadComboBox, 'producttype_filter');
+      fetchData(apiUrl+'metaltype', loadComboBox, 'metaltype_filter');
   });
   
   

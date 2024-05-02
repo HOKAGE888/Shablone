@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, abort, jsonify, send_file
 from models import Brand, ProductSubtype, ProductType, Template, Image, MetalType
 import os
+import subprocess
 import tempfile
 from flask import json
 
@@ -14,12 +15,14 @@ def upload(template_id):
 
 @app.route('/edit')
 def edit():
-  return render_template('canvas.html')
+  # return render_template('canvas.html')
+  return render_template('index_copy.html')
 
 
 @app.route('/')
 def hello():
   return render_template('index.html')
+
 
 
 
@@ -34,10 +37,14 @@ def generate_image(template: Template):
 
 
   params: dict = json.loads(template.json)
-  cmd = f'magick -size {params["width"].replace("px","")}x{params["height"].replace("px","")} xc:none '
+  print(params)
+  cmd = f'magick -size {params["width"]}x{params["height"]} xc:none '
 
-  for annotate in params['images']:
-    image: Image = Image.get_by_id(annotate['id'])
+  for entity in params['entities']:
+    if entity['type'] != 'image':
+      continue
+
+    image: Image = Image.get_by_id(entity['id'])
     
     img_name = f'{image.id}.png'
     with open(os.path.join(path, img_name), 'bw') as f:
@@ -45,23 +52,21 @@ def generate_image(template: Template):
 
     cmd += '-draw "image over '
 
-    if "margin-left" in annotate and "margin-top" in annotate:
-      cmd += f'{annotate["margin-left"].replace("px","")},{annotate["margin-top"].replace("px","")} '
+    cmd += f'{entity["x"]},{entity["y"]} '
 
-    if "width" in annotate and "height" in annotate:
-      cmd += f'{annotate["width"].replace("px","")},{annotate["height"].replace("px","")} '
+    cmd += f'{entity["width"]},{entity["height"]} '
 
     p = os.path.join(os.getcwd(), path, img_name).replace("\\", "\\\\")
     cmd += f'\'{p}\'" '
 
 
-  for annotate in params['annotations']:
-    cmd += '-annotate '
+  # for entity in params['annotations']:
+  #   cmd += '-annotate '
 
-    if "width" in annotate and "height" in annotate:
-      cmd += f'+{annotate["width"].replace("px","")}+{annotate["height"].replace("px","")} '
+  #   if "width" in entity and "height" in entity:
+  #     cmd += f'+{entity["width"].replace("px","")}+{entity["height"].replace("px","")} '
 
-    cmd += f'"{annotate["text"]}" '
+  #   cmd += f'"{entity["text"]}" '
 
     # image: Image = Image.get_by_id(annotate['id'])
     
@@ -77,8 +82,12 @@ def generate_image(template: Template):
 
     # cmd += f'\'{os.path.join(os.getcwd(), path, img_name)}\'" '
 
-  cmd += 'result.png'
-  template.imagemagick = cmd
+  cmd += os.path.join(os.getcwd(), path, 'result.png').replace("\\", "\\\\")
+  # template.imagemagick = cmd
+  print(cmd)
+  print(subprocess.check_output(cmd))
+
+  
   template.save()
 
 
@@ -177,7 +186,7 @@ def get_template_image(template_id):
     return jsonify({'error': 'Шаблон не найден'}), 400
 
   if template.imagemagick is None:
-    generate_image(template_id)
+    generate_image(template)
 
   file_path = os.path.join(os.getcwd(), 'projects', f'{template_id}', 'result.png')
 
