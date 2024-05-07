@@ -37,8 +37,7 @@
       </section>
     </div>
 
-    <div class="struct_shablone">
-      <div class="shablone " id="schablones"></div>
+    <div class="struct_shablone" id="templates">
     </div>
   </div>
   
@@ -112,11 +111,35 @@
       });
   }
   
+  const hostname = window.location.hostname;
+  const port = window.location.port;
+
+  function loadTemplates(data){
+    const content = document.getElementById('templates');
+    console.log(data)
+    data['entities'].forEach(template=>{
+      const div_template = document.createElement('div');
+      div_template.classList.add('shablone');
+      div_template.id = `template_${template.id}`;
+      div_template.style.backgroundImage = `url('/api/template/${template.id}/image/')`
+      content.appendChild(div_template);
+    });
+  }
+
+  function getTemplates(callback){
+    fetch(`http://${hostname}:${port}/api/template/`)
+      .then(response => response.json())
+      .then(data => callback(data))
+      .catch(error => console.error('Ошибка загрузки данных:', error));
+  }
+
   // URL API
-  const apiUrl = 'http://127.0.0.1:5000/api/';
+  const apiUrl = `http://${hostname}:${port}/api/`;
   
   // Вызов функции загрузки данных и заполнения списка при загрузке страницы
   window.addEventListener('load', () => {
+      getTemplates(loadTemplates);
+
       fetchData(apiUrl+'brand', loadComboBox, 'brand');
       fetchData(apiUrl+'productsubtype', loadComboBox, 'productsubtype');
       fetchData(apiUrl+'producttype', loadComboBox, 'producttype');

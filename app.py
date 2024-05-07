@@ -9,11 +9,11 @@ json.provider.DefaultJSONProvider.ensure_ascii = False
 app = Flask(__name__)
 
 
-@app.route('/template/<int:template_id>')
+@app.route('/template/<int:template_id>/')
 def upload(template_id):
   return render_template('edit_pattern.html', template_id=template_id)
 
-@app.route('/edit')
+@app.route('/edit/')
 def edit():
   # return render_template('canvas.html')
   return render_template('index_copy.html')
@@ -25,8 +25,30 @@ def hello():
 
 
 
+def generate_cmd_by_image(entity: dict, path):
+  image: Image = Image.get_by_id(entity['id'])
+  img_name = f'{image.id}.png'
+  
+  with open(os.path.join(path, img_name), 'bw') as f:
+    f.write(image.content)
 
-def generate_image(template: Template):
+  cmd = '-draw "image over '
+
+  cmd += f'{entity["x"]},{entity["y"]} '
+
+  cmd += f'{entity["width"]},{entity["height"]} '
+
+  p = os.path.join(os.getcwd(), path, img_name).replace("\\", "\\\\")
+  cmd += f'\'{p}\'" '
+
+  return cmd
+
+def generate_cmd_by_text(entity: dict):
+    print(entity)
+    return f'-font {entity["font"]} -pointsize {entity["fontSize"]} -fill "{entity["color"]}" -annotate +{entity["x"]}+{entity["y"]} "{entity["text"]}" '
+
+
+def generate_template(template: Template):
 
   if not template.json:
     return
@@ -37,50 +59,17 @@ def generate_image(template: Template):
 
 
   params: dict = json.loads(template.json)
-  print(params)
   cmd = f'magick -size {params["width"]}x{params["height"]} xc:none '
 
   for entity in params['entities']:
-    if entity['type'] != 'image':
-      continue
-
-    image: Image = Image.get_by_id(entity['id'])
     
-    img_name = f'{image.id}.png'
-    with open(os.path.join(path, img_name), 'bw') as f:
-      f.write(image.content)
-
-    cmd += '-draw "image over '
-
-    cmd += f'{entity["x"]},{entity["y"]} '
-
-    cmd += f'{entity["width"]},{entity["height"]} '
-
-    p = os.path.join(os.getcwd(), path, img_name).replace("\\", "\\\\")
-    cmd += f'\'{p}\'" '
+    if entity['type'] == 'image':
+      cmd += generate_cmd_by_image(entity, path)
+    elif entity['type'] == 'text':
+      cmd += generate_cmd_by_text(entity)
 
 
-  # for entity in params['annotations']:
-  #   cmd += '-annotate '
-
-  #   if "width" in entity and "height" in entity:
-  #     cmd += f'+{entity["width"].replace("px","")}+{entity["height"].replace("px","")} '
-
-  #   cmd += f'"{entity["text"]}" '
-
-    # image: Image = Image.get_by_id(annotate['id'])
-    
-    # img_name = f'{image.id}.png'
-    # with open(os.path.join(path, img_name), 'bw') as f:
-    #   f.write(image.content)
-
-    # cmd += '-draw "image over '
-
-    # if "margin-left" in annotate and "margin-top" in annotate:
-    #   cmd += f'{annotate["margin-left"].replace("px","")},{annotate["margin-top"].replace("px","")} '
-
-
-    # cmd += f'\'{os.path.join(os.getcwd(), path, img_name)}\'" '
+  
 
   cmd += os.path.join(os.getcwd(), path, 'result.png').replace("\\", "\\\\")
   # template.imagemagick = cmd
@@ -91,12 +80,12 @@ def generate_image(template: Template):
   template.save()
 
 
-@app.route('/move')
+@app.route('/move/')
 def get_move():
   return render_template('move_text_in_canvas.html')
 
 
-@app.route('/create')
+@app.route('/create/')
 def get_create_temlate():
   return render_template('create_template.html')
 
@@ -105,7 +94,7 @@ def get_create_temlate():
 
 
 
-@app.route('/api/productsubtype', methods=['GET'])
+@app.route('/api/productsubtype/', methods=['GET'])
 def get_product_subtypes():
   product_subtypes = ProductSubtype.filter()
   result = {'count':product_subtypes.count(), 'entities':[]}
@@ -117,7 +106,7 @@ def get_product_subtypes():
     })
   return jsonify(result)
 
-@app.route('/api/producttype', methods=['GET'])
+@app.route('/api/producttype/', methods=['GET'])
 def get_product_types():
   product_types = ProductType.filter()
   result = {'count':product_types.count(), 'entities':[]}
@@ -129,7 +118,7 @@ def get_product_types():
   return jsonify(result)
 
 
-@app.route('/api/brand', methods=['GET'])
+@app.route('/api/brand/', methods=['GET'])
 def get_brands():
   brands = Brand.filter()
   result = {'count':brands.count(), 'entities':[]}
@@ -140,7 +129,7 @@ def get_brands():
     })
   return jsonify(result)
 
-@app.route('/api/metaltype', methods=['GET'])
+@app.route('/api/metaltype/', methods=['GET'])
 def get_metaltypes():
   metal_types = MetalType.filter()
   result = {'count':metal_types.count(), 'entities':[]}
@@ -151,15 +140,28 @@ def get_metaltypes():
     })
   return jsonify(result)
 
-@app.route('/api/template', methods=['POST'])
-def create_template():
+@app.route('/api/template/', methods=['GET', 'POST'])
+def api_template():
   """Создает шаблон"""
-  print(request.json)
-  template = Template.create(**request.json)
-  return jsonify({'template_id':template.id}), 200
+  if request.method == 'POST':
+    template = Template.create(**request.json)
+    return jsonify({'template_id':template.id}), 200
+  
+  templates = []
+  for template in Template.select():
+    templates.append(
+      {
+        'id': template.id,
+        'brand': template.brand_id,
+        'metal_type': template.metal_type_id,
+        'product_subtype': template.product_subtype_id,
+      }
+    )
+  return jsonify({"count": len(templates), "entities": templates}), 200
+  
 
 
-@app.route('/api/template/<int:template_id>', methods=['GET', 'PATCH'])
+@app.route('/api/template/<int:template_id>/', methods=['GET', 'PATCH'])
 def get_template(template_id):
   """Пролучить и обновить шаблон"""
   template = Template.get_or_none(id=template_id)
@@ -178,7 +180,7 @@ def get_template(template_id):
   print(template.json)
   return template.json, 200
 
-@app.route('/api/template/<int:template_id>/image', methods=['GET'])
+@app.route('/api/template/<int:template_id>/image/', methods=['GET'])
 def get_template_image(template_id):
   
   template = Template.get_or_none(id=template_id)
@@ -186,14 +188,14 @@ def get_template_image(template_id):
     return jsonify({'error': 'Шаблон не найден'}), 400
 
   if template.imagemagick is None:
-    generate_image(template)
+    generate_template(template)
 
   file_path = os.path.join(os.getcwd(), 'projects', f'{template_id}', 'result.png')
 
   return send_file(file_path, mimetype='image/png', as_attachment=False)
 
 
-@app.route('/api/image', methods=['POST'])
+@app.route('/api/image/', methods=['POST'])
 def upload_file():
     """Загрузить изображения на сервер"""
 
@@ -214,7 +216,7 @@ def upload_file():
     return jsonify({'message': 'Всё прекрасно. Файл загружен.', 'image': image.id}), 200
 
 
-@app.route('/api/image/<int:image_id>', methods=['GET'])
+@app.route('/api/image/<int:image_id>/', methods=['GET'])
 def get_image(image_id):
   """Отправляет пользователю изображение"""
   image = Image.get_or_none(id=image_id)

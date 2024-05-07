@@ -17,6 +17,7 @@ window.onload = function(){
     port = window.location.port;
     parts = window.location.href.split('/')
     template_id = parts[parts.length - 1];
+    if (template_id==='') template_id = parts[parts.length - 2];
     // Массив для хранения текстов
     canvas_data = {
         id: template_id,
@@ -332,7 +333,7 @@ window.onload = function(){
         }
     });
 
-    fetchData(`http://${hostname}:${port}/api/template/${template_id}`, loadTemplate)
+    fetchData(`http://${hostname}:${port}/api/template/${template_id}/`, loadTemplate)
 }
 
 
@@ -366,6 +367,7 @@ window.onload = function(){
 
 
 function fetchData(url, callback) {
+    console.log(url);
     fetch(url)
         .then(response => response.json())
         .then(data => callback(data))
@@ -383,6 +385,7 @@ function drawObjects() {
     document.getElementById("fieldId").style.margin = "50px 100px" //"calc((100lvh - " + canvas_data.height + ")/2)";
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log(canvas_data);
     document.getElementById('canvas-color').value = canvas_data.color;
     canvas.style.backgroundColor = document.getElementById('canvas-color').value;
 
@@ -430,6 +433,7 @@ function drawObjects() {
 }
 
 function loadTemplate(jsonData) {
+    console.log(jsonData)
     canvas_data = jsonData;
     drawObjects();
 }
