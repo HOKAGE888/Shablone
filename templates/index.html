@@ -30,10 +30,18 @@
 
     <div>
       <section>
-        <select class="filter" id="brand_filter"></select>
-        <select class="filter" id="producttype_filter"></select>
-        <select class="filter" id="productsubtype_filter"></select>
-        <select class="filter" id="metaltype_filter"></select><br>
+        <select class="filter" id="brand_filter">
+          <option value=""></option>
+        </select>
+        <select class="filter" id="product_type_filter">
+          <option value=""></option>
+        </select>
+        <select class="filter" id="product_subtype_filter">
+          <option value=""></option>
+        </select>
+        <select class="filter" id="metal_type_filter">
+          <option value=""></option>
+        </select><br>
       </section>
     </div>
 
@@ -101,7 +109,7 @@
   function loadComboBox(jsonData, elementId) {
       const dropdown = document.getElementById(elementId);
       // Очистка списка перед добавлением новых элементов
-      dropdown.innerHTML = '';
+      // dropdown.innerHTML = '';
       // Добавление элементов из JSON в список
       jsonData.entities.forEach(entity => {
           const option = document.createElement('option');
@@ -116,18 +124,50 @@
 
   function loadTemplates(data){
     const content = document.getElementById('templates');
+    content.innerHTML = '';
     console.log(data)
     data['entities'].forEach(template=>{
+      
       const div_template = document.createElement('div');
       div_template.classList.add('shablone');
       div_template.id = `template_${template.id}`;
-      div_template.style.backgroundImage = `url('/api/template/${template.id}/image/')`
-      content.appendChild(div_template);
+      div_template.style.backgroundImage = `url('/api/template/${template.id}/image/')`;
+
+      const a_template = document.createElement('a');
+      a_template.href = `http://${hostname}:${port}/template/${template.id}/`
+      a_template.appendChild(div_template);
+
+      const button_element = document.createElement('button');
+      button_element.innerHTML = 'D';
+      // button_element.classList.add('???');
+      button_element.id = template.id;
+      button_element.addEventListener('click', (event) => {
+        console.log(event);
+      });
+
+      const div_content_element = document.createElement('div');
+      div_content_element.appendChild(button_element);
+      div_content_element.appendChild(a_template);
+      
+      content.appendChild(div_content_element);
     });
   }
 
   function getTemplates(callback){
-    fetch(`http://${hostname}:${port}/api/template/`)
+    params = [];
+    const filters = ['brand', 'product_subtype', 'metal_type'];
+    filters.forEach(filter =>{
+      const combobox = document.getElementById(`${filter}_filter`);
+      if(combobox.value){
+        params.push(`${filter}_id=${combobox.value}`);
+      }
+    });
+    let url = `http://${hostname}:${port}/api/template/`
+    if(params.length > 0)
+      url += `?${params.join('&')}`
+
+    console.log(url)
+    fetch(url)
       .then(response => response.json())
       .then(data => callback(data))
       .catch(error => console.error('Ошибка загрузки данных:', error));
@@ -146,9 +186,9 @@
       fetchData(apiUrl+'metaltype', loadComboBox, 'metaltype');
 
       fetchData(apiUrl+'brand', loadComboBox, 'brand_filter');
-      fetchData(apiUrl+'productsubtype', loadComboBox, 'productsubtype_filter');
-      fetchData(apiUrl+'producttype', loadComboBox, 'producttype_filter');
-      fetchData(apiUrl+'metaltype', loadComboBox, 'metaltype_filter');
+      fetchData(apiUrl+'productsubtype', loadComboBox, 'product_subtype_filter');
+      fetchData(apiUrl+'producttype', loadComboBox, 'product_type_filter');
+      fetchData(apiUrl+'metaltype', loadComboBox, 'metal_type_filter');
   });
   
   
@@ -156,6 +196,13 @@
   document.getElementById('closeModalBtn').addEventListener('click', function() {
       document.getElementById('myModal').style.display = 'none';
   });
+
+
+  
+  document.getElementById('brand_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
+  document.getElementById('product_subtype_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
+  document.getElementById('product_type_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
+  document.getElementById('metal_type_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
   </script>
   
 

@@ -44,7 +44,6 @@ def generate_cmd_by_image(entity: dict, path):
   return cmd
 
 def generate_cmd_by_text(entity: dict):
-    print(entity)
     return f'-font {entity["font"]} -pointsize {entity["fontSize"]} -fill "{entity["color"]}" -annotate +{entity["x"]}+{entity["y"]} "{entity["text"]}" '
 
 
@@ -72,11 +71,8 @@ def generate_template(template: Template):
   
 
   cmd += os.path.join(os.getcwd(), path, 'result.png').replace("\\", "\\\\")
-  # template.imagemagick = cmd
-  print(cmd)
   print(subprocess.check_output(cmd))
-
-  
+  template.imagemagick = cmd
   template.save()
 
 
@@ -147,8 +143,14 @@ def api_template():
     template = Template.create(**request.json)
     return jsonify({'template_id':template.id}), 200
   
+  params = {}
+  for key in ['brand_id', 'product_subtype_id', 'metal_type_id']:
+    if key in request.args:
+      params[key] = request.args[key]
+  
+  print(params, request.args)
   templates = []
-  for template in Template.select():
+  for template in Template.filter(**params):
     templates.append(
       {
         'id': template.id,
@@ -169,7 +171,6 @@ def get_template(template_id):
     return jsonify({'error': 'Шаблон не найден'}), 400
   
   if request.method == 'PATCH':
-    print(request.json)
     for entity in request.json['entities']:
       if entity['type'] == 'image' and 'image' in entity:
         del entity['image']
@@ -177,7 +178,6 @@ def get_template(template_id):
     template.imagemagick = None
     template.save()
   
-  print(template.json)
   return template.json, 200
 
 @app.route('/api/template/<int:template_id>/image/', methods=['GET'])
@@ -198,8 +198,6 @@ def get_template_image(template_id):
 @app.route('/api/image/', methods=['POST'])
 def upload_file():
     """Загрузить изображения на сервер"""
-
-    print(request.files)
 
     # Проверка наличия файла в запросе
     if 'image' not in request.files:
