@@ -8,18 +8,15 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/edit_pattern.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
     <script src="{{ url_for('static', filename='edit_pattern.js') }}"></script>
-    <!-- <script src="{{ url_for('static', filename='scripts.js') }}"></script> -->
-    <!-- <script src="{{ url_for('static', filename='edit_template.js') }}"></script> -->
 </head>
 
 <body bgcolor="#dee2e6">
     <div class="edit_app">
         <div class="left-menu">
             <div class="top-element">
-                <div
-                    style="font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold; cursor: default;">
+                <a href="http://127.0.0.1:5000" style="text-decoration:none; font-family: Montserrat, Helvetica, sans-serif; font-size: 35px; color: #ffffff; text-align: center; font-weight: bold; cursor: default;">
                     SOKOLOV
-                </div>
+                </a>
                 <hr class="liniya">
             </div>
 
@@ -29,6 +26,8 @@
 
             <input type="file" id="file-input" accept=".png" style="display: none;">
             <button class="panel" id="add-img-btn">Добавить картинку</button>
+
+            <button class="panel">Хз как назвать</button>
 
             <div class="preview">
                 <hr style="width: 80%">
@@ -84,6 +83,7 @@
                         <option value="normal">Обычный</option>
                         <option value="bold">Жирный</option>
                     </select><br>
+
                     <h class="text_pole">Цвет текста</h>
                     <input class="cr" type="color" value="#ffffff" id="text-color"/>
                     <button class="delete" id="delete-text">Удалить</button>
@@ -91,7 +91,7 @@
             </div>
 
             <div id="image-properties-panel" style="display:none">
-                <div class="right-text">Редактирование изменения</div>
+                <div class="right-text">Редактирование изображения</div>
                 <div class="text-right-menu">
                     <h class="text_pole">По горизонтали:</h>
                     <input style="width:25%" class="text-field__input" type="text" id="image-x"><br>
