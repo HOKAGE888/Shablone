@@ -59,35 +59,36 @@
             <div id="text-properties-panel" style="display:none">
                 <div class="right-text">Редактирование текста</div>
                 <div class="text-right-menu">
+                    <div class="property_element">  <p class="text_pole">Текст:</p>
+                    <input class="width_field_max text-field__input" type="text" id="text-input"></div>
+                    <div class="property_element"><p class="text_pole">По горизонтали:</p>
+                    <input class="text-field__input width_field25" type="text" id="text-x"></div>
+                    <div class="property_element"> <p class="text_pole">По вертикали:</p>
+                    <input  class="text-field__input width_field25" type="text" id="text-y"></div>
+                    <div class="property_element"><p class="text_pole">Размер шрифта:</p>
+                    <input  class="text-field__input width_field25" type="number" id="font-size" min="1"></div>
                     
-                    <h class="text_pole">Текст:</h>
-                    <input class="text-field__input" type="text" id="text-input"><br>
-                    <h class="text_pole">По горизонтали:</h>
-                    <input style="width:25%" class="text-field__input" type="text" id="text-x"><br>
-                    <h class="text_pole">По вертикали:</h>
-                    <input style="width:25%" class="text-field__input" type="text" id="text-y"><br>
-                    <h class="text_pole">Размер шрифта:</h>
-                    <input style="width:25%" class="text-field__input" type="number" id="font-size" min="1"><br>
-                    
-                    <h class="text_pole">Шрифт:</h>
+                    <div class="property_element">  <h class="text_pole">Шрифт:</h>
                     <select id="font" class="filter">
                         <option value="Arial">Arial</option>
                         <option value="Times New Roman">Times New Roman</option>
                         <option value="Courier New">Courier New</option>
                         <option value="Verdana">Verdana</option>
                         <option value="Montserrat">Montserrat</option>
-                      </select>
-
-                    <h class="text_pole">Жирность:</h>
+                      </select></div>
+                  
+                    <div class="property_element"> <h class="text_pole">Жирность:</h>
                     <select class="filter" id="font-weight">
                         <option value="normal">Обычный</option>
                         <option value="bold">Жирный</option>
-                    </select><br>
-
-                    <h class="text_pole">Цвет текста</h>
-                    <input class="cr" type="color" value="#ffffff" id="text-color"/>
-                    <button class="delete" id="delete-text">Удалить</button>
+                    </select><br></div>
+                   
+                    <div class="property_element"><h class="text_pole">Цвет текста</h>
+                    <input class="cr" type="color" value="#ffffff" id="text-color"/></div>
+                    
+                    
                 </div>
+                <div class="button_delete"><button class="delete" id="delete-text">Удалить</button></div>
             </div>
 
             <div id="image-properties-panel" style="display:none">

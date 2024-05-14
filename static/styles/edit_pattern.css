@@ -98,24 +98,19 @@ body {
 
 .delete {
     border: #ffffff00 solid 3px;
-    /* margin-top: calc(100lvh - 420px);
-    left: 0;
-    bottom: 0; */
     width: 200px;
     height: 70px;
     font-family: 'Montserrat';
     font-size: 20px;
     color: #ffffff;
     border: none;
-    background: #bdbdbd;
+    background: none;
     cursor: pointer;
     text-align: center;
-    /* margin-top: 0;
-    display: block;
-    margin:0 auto; */
-    left: 70%;
+}
 
-   
+.button_delete{
+    text-align: center;
 }
 
 .text-field__input {
@@ -137,6 +132,15 @@ body {
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     margin-bottom: 10px;
     margin-top: 10px;
+    margin-left: auto;
+    margin-right: 20px;
+    
+}
+.width_field_max{
+    width: 70%;
+}
+.width_field25{
+    width:50%;
 }
 
 .text-right-menu {
@@ -144,14 +148,21 @@ body {
     font-size: 18px;
     color: #ffffff;
     clear: both;
-    text-align: right;
     line-height: 50px;
     margin-right: 30px;
+
 }
 
+
+.property_element{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+
 .text_pole {
-    float: left;
-    margin-left: 30px;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 

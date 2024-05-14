@@ -1,11 +1,22 @@
+
+body{
+    margin: 0;
+    padding: 0;
+}
 .top{
     width: 100%;
     background-color:#212529;
     height: 100px;
     display: flex;
+    position: relative;
 }
 
-.top>button{
+.top_ident div{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.button_modal button{
     font-family: 'Montserrat';
     font-size: 25px;
     color: #ffffff;
@@ -21,13 +32,13 @@
     
 }
 
-.top>button:hover {
+.button_modal button:hover {
     border-right: 0px;
     border-left: 0px;
     border-color: white;
 }
 
-.top>select {
+.selector_filter select {
     background-color: #ffffff;
     width: 12vw;
     height: 40px;
@@ -61,123 +72,6 @@
     background-position: center;
 }
 
-
-
-
-
-
-/* .start-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 50vw;
-}
-
-.black {
-    background-color: #257ae8;
-    width: 30px;
-}
-
-.btn {
-    background-color: #257ae8;
-    width: 20vw;
-    height: 50px;
-    border-radius: 20px;
-    color: white;
-    text-align: center;
-    font-size: 2em;
-    margin: 30px 50px 0px 50px;
-    font-weight: bold;
-    font-family: 'Arial';
-    font-size: 28px;
-    border: 5px solid #257ae8;
-    transition: 1s;
-}
-
-.btn:hover {
-    border-radius: 10px;
-    background-color: white;
-    outline: 2px solid linear-gradient(90deg, #257ae8, #7aadf0, #a1c1eb, #ffffff, #ffffff);
-    color: rgb(0, 0, 0);
-}
-
-.import {
-    height: 10vh;
-}
-
-.create {
-    height: 8vh;
-}
-
-.struct_shablone {
-    display: flex;
-    flex-wrap: wrap;
-    overflow-y: scroll;
-    max-height: 87vh;
-    scrollbar-width: thin;
-    scrollbar-color: hsl(0, 0%, 6%);
-}
-
-.shablone {
-    background-color: rgb(133, 132, 132);
-    width: 280px;
-    height: 400px;
-    margin: 10px;
-}
-
-body {
-    width: 100lvw;
-    height: 100lvh;
-    margin: 0px;
-}
-
-.title {
-    background-color: #257ae8;
-    color: white;
-    font-weight: bold;
-    font-family: 'Arial';
-    font-size: 28px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 15px;
-    margin-top: 10px;
-}
-
-.shabloni {
-    margin-left: 2vw;
-}
-
-.filter {
-    background-color: #ffffff;
-    width: 12vw;
-    height: 40px;
-    border-radius: 15px;
-    color: rgb(0, 0, 0);
-    text-align: center;
-    margin: 10px 0px 0px 10px;
-    font-size: 2em;
-    font-family: 'arial';
-    font-size: 18px;
-    border: 2px solid #000000;
-    transition: 1s;
-}
-
-.main-content {
-    width: 100%;
-}
-
-
-.for-js-background {
-    position: 0px;
-}
-
-*, *::before, *::after {
-    box-sizing: border-box;
-  } */
-
-  
 /*МОДАЛЬНОЕ ОКНО  */
 
 .modal {
