@@ -149,10 +149,23 @@
 
       const button_element = document.createElement('button');
       button_element.innerHTML = 'D';
-      // button_element.classList.add('???');
+      button_element.classList.add('deletetemplate');
       button_element.id = template.id;
       button_element.addEventListener('click', (event) => {
         console.log(event);
+
+        function refresh_templates(){
+          getTemplates(loadTemplates);
+        }
+
+        const options = {
+          method: 'DELETE', // Метод запроса DELETE
+        };
+        const url = `http://${hostname}:${port}/api/template/${template.id}`;
+        fetch(url, options)
+          .then(response => response.json())
+          .then(data => refresh_templates())
+          .catch(error => console.error('Ошибка загрузки данных:', error));
       });
 
       const div_content_element = document.createElement('div');

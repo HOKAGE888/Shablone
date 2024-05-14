@@ -27,12 +27,11 @@ class ProductSubtype(Table):
 
 
 class Image(Table):
-    content = BlobField()
+    pass
 
 class Template(Table):
     json = TextField(default='{"width": 300, "height": 600, "color": "#ffffff", "entities": []}')
     imagemagick = TextField(null=True)
-    image = ForeignKeyField(Image, null=True)
     brand = ForeignKeyField(Brand)
     metal_type = ForeignKeyField(MetalType)
     product_subtype = ForeignKeyField(ProductSubtype)
@@ -40,12 +39,12 @@ class Template(Table):
 
 
 
-# class Product(Table):
-#     product_subtype = ForeignKeyField(ProductSubtype)
-#     brand = ForeignKeyField(Brand)
-#     metal_type = ForeignKeyField(MetalType)
-#     image = ForeignKeyField(Image)
+class Product(Table):
+    product_subtype = ForeignKeyField(ProductSubtype)
+    brand = ForeignKeyField(Brand)
+    metal_type = ForeignKeyField(MetalType)
+    url = TextField()
 
 db.connect()
-db.create_tables([MetalType, Brand, ProductType, ProductSubtype, Template, Image])
+db.create_tables([MetalType, Brand, ProductType, ProductSubtype, Template, Image, Product])
 db.close()

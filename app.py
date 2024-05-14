@@ -26,11 +26,7 @@ def hello():
 
 
 def generate_cmd_by_image(entity: dict, path):
-  image: Image = Image.get_by_id(entity['id'])
-  img_name = f'{image.id}.png'
-  
-  with open(os.path.join(path, img_name), 'bw') as f:
-    f.write(image.content)
+  img_name = os.path.join('images', f'{entity["id"]}.png')
 
   cmd = '-draw "image over '
 
@@ -38,7 +34,7 @@ def generate_cmd_by_image(entity: dict, path):
 
   cmd += f'{entity["width"]},{entity["height"]} '
 
-  p = os.path.join(os.getcwd(), path, img_name).replace("\\", "\\\\")
+  p = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
   cmd += f'\'{p}\'" '
 
   return cmd
@@ -58,7 +54,7 @@ def generate_template(template: Template):
 
 
   params: dict = json.loads(template.json)
-  cmd = f'magick -size {params["width"]}x{params["height"]} xc:none '
+  cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} '
 
   for entity in params['entities']:
     
@@ -148,7 +144,6 @@ def api_template():
     if key in request.args:
       params[key] = request.args[key]
   
-  print(params, request.args)
   templates = []
   for template in Template.filter(**params):
     templates.append(
@@ -163,7 +158,7 @@ def api_template():
   
 
 
-@app.route('/api/template/<int:template_id>/', methods=['GET', 'PATCH'])
+@app.route('/api/template/<int:template_id>/', methods=['GET', 'PATCH', 'DELETE'])
 def get_template(template_id):
   """Пролучить и обновить шаблон"""
   template = Template.get_or_none(id=template_id)
@@ -178,6 +173,9 @@ def get_template(template_id):
     template.imagemagick = None
     template.save()
   
+  if request.method == 'DELETE':
+    template.delete_instance()
+
   return template.json, 200
 
 @app.route('/api/template/<int:template_id>/image/', methods=['GET'])
@@ -190,9 +188,11 @@ def get_template_image(template_id):
   if template.imagemagick is None:
     generate_template(template)
 
-  file_path = os.path.join(os.getcwd(), 'projects', f'{template_id}', 'result.png')
-
-  return send_file(file_path, mimetype='image/png', as_attachment=False)
+  return send_file(
+    os.path.join(os.getcwd(), 'projects', f'{template.id}', 'result.png'),
+    mimetype='image/png', 
+    as_attachment=False
+  )
 
 
 @app.route('/api/image/', methods=['POST'])
@@ -205,11 +205,9 @@ def upload_file():
 
     file = request.files['image']
 
-    # Чтение содержимого файла
-    content = file.read()
+    image = Image.create()
+    file.save(os.path.join('images', f'{image.id}.png'))
 
-    # Сохранение файла в базу данных
-    image = Image.create(content=content)
 
     return jsonify({'message': 'Всё прекрасно. Файл загружен.', 'image': image.id}), 200
 
@@ -221,12 +219,13 @@ def get_image(image_id):
   if image is None:
     return jsonify({'error': 'Image not found'}), 404
   
-  with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-    temp_file.write(image.content)
-  
   # Отправляем временный файл в качестве ответа
-  return send_file(temp_file.name, mimetype='image/png', as_attachment=False)
+  return send_file(os.path.join('images',  f'{image.id}.png'), mimetype='image/png', as_attachment=False)
 
 
 if __name__ == '__main__':
+  for path in ['images', 'projects']:
+      if not os.path.exists(path):
+        os.mkdir(path)
+  
   app.run(debug=True)

@@ -333,6 +333,10 @@ window.onload = function(){
         }
     });
 
+    document.getElementById('add_product').addEventListener('click', function() {
+        addImg(0,0,"api/image/1", 100, 100, 1);
+    });
+
     fetchData(`http://${hostname}:${port}/api/template/${template_id}/`, loadTemplate)
 }
 
@@ -374,6 +378,33 @@ function fetchData(url, callback) {
         .catch(error => console.error('Ошибка загрузки данных:', error));
 }
 
+function drawImage(entity, index){
+    if ('image' in entity){
+        ctx.drawImage(entity.image, entity.x, entity.y, entity.width, entity.height);
+    }else{
+        const image = new Image();
+        image.onload = function(){
+            ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
+            entity['image'] = image
+        }
+        image.src = `http://${hostname}:${port}/${entity.url}`;
+    }
+    if (selectedIndex === index){
+        const handles = [
+            { x: entity.x, y: entity.y}, // Верхний левый угол
+            { x: entity.x + entity.width, y: entity.y}, // Верхний правый угол
+            { x: entity.x + entity.width, y: entity.y + entity.height}, // Нижний правый угол
+            { x: entity.x, y: entity.y + entity.height} // Нижний левый угол
+        ];
+        handles.forEach(handle => {
+            ctx.beginPath();
+            ctx.fillStyle = '#000000';
+            ctx.arc(handle.x , handle.y, resizeHandleSize, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+}
+
 function drawObjects() {
     
     document.getElementById('canvas-width').value = canvas_data.width;
@@ -391,7 +422,6 @@ function drawObjects() {
 
     canvas_data.entities.forEach((entity, index) => {
 
-        
         switch (entity.type) {
             case 'text':
                 ctx.fillStyle = entity.color;
@@ -403,30 +433,7 @@ function drawObjects() {
                 }
                 break;
             case 'image':
-                if ('image' in entity){
-                    ctx.drawImage(entity.image, entity.x, entity.y, entity.width, entity.height);
-                }else{
-                    const image = new Image();
-                    image.onload = function(){
-                        ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
-                        entity['image'] = image
-                    }
-                    image.src = `http://${hostname}:${port}/${entity.url}`;
-                }
-                if (selectedIndex === index){
-                    const handles = [
-                        { x: entity.x, y: entity.y}, // Верхний левый угол
-                        { x: entity.x + entity.width, y: entity.y}, // Верхний правый угол
-                        { x: entity.x + entity.width, y: entity.y + entity.height}, // Нижний правый угол
-                        { x: entity.x, y: entity.y + entity.height} // Нижний левый угол
-                    ];
-                    handles.forEach(handle => {
-                        ctx.beginPath();
-                        ctx.fillStyle = '#000000';
-                        ctx.arc(handle.x , handle.y, resizeHandleSize, 0, Math.PI * 2);
-                        ctx.fill();
-                    });
-                }
+                drawImage(entity, index);
                 break;
         }
     });
