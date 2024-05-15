@@ -45,12 +45,19 @@ body{
     border-radius: 15px;
     color: rgb(0, 0, 0);
     text-align: center;
-    margin: 10px 0px 0px 10px;
+    margin: 10px 20px 0px 0px;
     font-size: 2em;
     font-family: 'arial';
     font-size: 18px;
     border: 2px solid #000000;
     transition: 1s;
+}
+
+.selector_filter h{
+    font-family: 'Montserrat';
+    font-size: 20px;
+    color: #ffffff;
+
 }
 
 .struct_shablone {
@@ -72,6 +79,14 @@ body{
     background-position: center;
 }
 
+.deletetemplate{
+    background-color: #212529;
+    border: none;
+    width: 30px;
+    height: 30px;
+    margin-left: 260px;
+}
+
 /*МОДАЛЬНОЕ ОКНО  */
 
 .modal {
@@ -90,32 +105,34 @@ body{
     border-radius: 20px;
     background-color: #fefefe;
     margin: 15% auto;
-    padding: 20px 40px 40px 40px;
+    margin-top: 250px;
+    padding: 20px 40px 20px 40px;
     border: 1px solid #888;
-    width: 60%;
+    width: 40%;
 }
 
 .btn_modal {
-    background-color: #257ae8;
-    width: 200px;
-    height: 60px;
-    border-radius: 20px;
-    color: white;
-    text-align: center;
-    font-size: 2em;
     font-weight: bold;
-    font-family: 'Arial';
-    font-size: 20px;
-    border: 5px solid #257ae8;
-    transition: 1s;
-    margin: 20px 0px 0px;
+    font-family: 'Montserrat';
+    font-size: 28px;
+    color: #212529;
+    background: none;
+    margin: 1px 45px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    border: #ffffff00 solid 3px;
+    border-right: 0px;
+    border-left: 0px;
+    transition: 0.5s;
+    height:60px;
+    width: 200px;
 }
 
 .btn_modal:hover {
-    border-radius: 10px;
-    background-color: white;
-    outline: 2px solid linear-gradient(90deg, #257ae8, #7aadf0, #a1c1eb, #ffffff, #ffffff);
-    color: rgb(0, 0, 0);
+    font-weight: bold;
+    border-right: 0px;
+    border-left: 0px;
+    border-color: #212529;
 }
 
 .text_modal {
@@ -123,6 +140,21 @@ body{
     font-weight: bold;
     font-family: 'Arial';
     font-size: 20px;
-    margin: 10px 0px 0px 10px;
 }
 
+.modal_filter{
+    display:flex;
+    width: 450px;
+}
+
+.filt_centr{
+    width: 450px;
+    height: 250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal_filter select{
+   margin-right: 0%;
+   margin-left: auto;
+}
