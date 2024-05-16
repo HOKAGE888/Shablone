@@ -25,8 +25,13 @@ def hello():
 
 
 
-def generate_cmd_by_image(entity: dict, path):
-  img_name = os.path.join('images', f'{entity["id"]}.png')
+def generate_cmd_by_image(entity: dict):
+
+  try:
+    img_name = os.path.join('images', f'{int(entity["id"])}.png')
+  except:
+    img_name = os.path.join('image', entity["id"])
+
 
   cmd = '-draw "image over '
 
@@ -59,7 +64,7 @@ def generate_template(template: Template):
   for entity in params['entities']:
     
     if entity['type'] == 'image':
-      cmd += generate_cmd_by_image(entity, path)
+      cmd += generate_cmd_by_image(entity)
     elif entity['type'] == 'text':
       cmd += generate_cmd_by_text(entity)
 
@@ -67,19 +72,10 @@ def generate_template(template: Template):
   
 
   cmd += os.path.join(os.getcwd(), path, 'result.png').replace("\\", "\\\\")
-  print(subprocess.check_output(cmd))
+  subprocess.check_output(cmd)
   template.imagemagick = cmd
   template.save()
 
-
-@app.route('/move/')
-def get_move():
-  return render_template('move_text_in_canvas.html')
-
-
-@app.route('/create/')
-def get_create_temlate():
-  return render_template('create_template.html')
 
 # AAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIIIIIII
 
@@ -212,8 +208,13 @@ def upload_file():
     return jsonify({'message': 'Всё прекрасно. Файл загружен.', 'image': image.id}), 200
 
 
+@app.route('/api/image/<string:image_name>/', methods=['GET'])
+def get_image_by_name(image_name):
+  """Отправляет пользователю изображение"""
+  return send_file(os.path.join('image',  image_name), mimetype='image/png', as_attachment=False)
+
 @app.route('/api/image/<int:image_id>/', methods=['GET'])
-def get_image(image_id):
+def get_image_by_id(image_id):
   """Отправляет пользователю изображение"""
   image = Image.get_or_none(id=image_id)
   if image is None:

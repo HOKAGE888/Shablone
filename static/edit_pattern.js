@@ -334,7 +334,7 @@ window.onload = function(){
     });
 
     document.getElementById('add_product').addEventListener('click', function() {
-        addImg(0,0,"api/image/1", 100, 100, 1);
+        addImg(0, 0, "/api/image/product.png", 100, 100, "product.png");
     });
 
     fetchData(`http://${hostname}:${port}/api/template/${template_id}/`, loadTemplate)
@@ -371,7 +371,6 @@ window.onload = function(){
 
 
 function fetchData(url, callback) {
-    console.log(url);
     fetch(url)
         .then(response => response.json())
         .then(data => callback(data))
@@ -416,7 +415,6 @@ function drawObjects() {
     document.getElementById("fieldId").style.margin = "50px 100px" //"calc((100lvh - " + canvas_data.height + ")/2)";
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(canvas_data);
     document.getElementById('canvas-color').value = canvas_data.color;
     canvas.style.backgroundColor = document.getElementById('canvas-color').value;
 
@@ -440,7 +438,6 @@ function drawObjects() {
 }
 
 function loadTemplate(jsonData) {
-    console.log(jsonData)
     canvas_data = jsonData;
     drawObjects();
 }

@@ -71,9 +71,13 @@ body{
 
 .shablone {
     background-color: rgb(133, 132, 132);
+    margin: 10px;
+    position: relative;
+}
+
+.shablone_image {
     width: 280px;
     height: 400px;
-    margin: 10px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -84,7 +88,10 @@ body{
     border: none;
     width: 30px;
     height: 30px;
-    margin-left: 260px;
+    background-image: url("/api/image/delete.png");
+    position: absolute; /* Устанавливаем позицию кнопки как абсолютную */
+    top: 0; /* Располагаем кнопку вверху контейнера */
+    right: 0; /* Располагаем кнопку справа в контейнере */
 }
 
 /*МОДАЛЬНОЕ ОКНО  */
