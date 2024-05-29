@@ -310,7 +310,28 @@ window.onload = function(){
         };
         xhr.send(JSON.stringify(canvas_data));
     });
-    
+
+    // при клике по кнопке скачать архив
+    document.getElementById('download-zip-btn').addEventListener('click', () => {
+        fetch(`http://${hostname}:${port}/api/template/${template_id}/zip`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.blob(); // Получаем Blob из ответа
+            })
+            .then(blob => {
+                const link = document.createElement('a'); // Создаем элемент ссылки
+                link.href = window.URL.createObjectURL(blob); // Создаем URL для Blob
+                link.download = 'archive.zip'; // Указываем имя файла для скачивания
+                link.click(); // Программно кликаем на ссылку, чтобы инициировать скачивание
+                window.URL.revokeObjectURL(link.href); // Освобождаем URL
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    });
+
     document.getElementById('delete-text').addEventListener('click', function() {
         if (selectedIndex >= 0 && selectedIndex < canvas_data.entities.length) {
             canvas_data.entities.splice(selectedIndex, 1);

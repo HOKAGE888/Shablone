@@ -271,10 +271,13 @@ def get_template_zip(template_id):
     )
   
   zip_file_path = os.path.join(os.getcwd(), 'projects', f'{template.id}.zip')
-  zip_folder(project_path, zip_file_path)
-  move_file(zip_file_path, project_path)      
+  zip_folder(project_path, zip_file_path)   
   
-  return jsonify({'debug': 'debug'}), 200
+  return send_file(
+    path_or_file=zip_file_path,
+    download_name='archive.zip',
+    as_attachment=True
+  )
 
 
 @app.route('/api/template/<int:template_id>/image/', methods=['GET'])
