@@ -37,15 +37,16 @@ def generate_cmd_by_image(entity: dict):
   elif entity['type'] == 'product':
     img_name = os.path.join('products', f'{int(entity["id"])}.png')
 
+  img_name = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
 
-  cmd = '-draw "image over '
+  cmd = f'( "{img_name}" -resize {entity["width"]}x{entity["height"]} -geometry +{entity["x"]}+{entity["y"]} ) '
+  # cmd += '-draw "image over '
 
-  cmd += f'{entity["x"]},{entity["y"]} '
-
-  cmd += f'{entity["width"]},{entity["height"]} '
-
-  p = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
-  cmd += f'\'{p}\'" '
+  # cmd += f'{entity["x"]},{entity["y"]} '
+  # cmd += f'{entity["width"]},{entity["height"]} '
+  # cmd += f"'mpr:shadow{entity['x']}{entity['y']}'\" ) -write mpr:shadow{entity['x']}{entity['y']} ) +swap -background none -layers merge +repage "
+  # p = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
+  # cmd += f'\'{p}\'" '
 
   return cmd
 
@@ -75,8 +76,9 @@ def generate_template(template: Template):
 
 
   
-
-  cmd += os.path.join(os.getcwd(), path, 'result.png').replace("\\", "\\\\")
+  cmd += "-layers merge +repage "
+  cmd += '"' + os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\") + '"'
+  print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd)
   return cmd
 
