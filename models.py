@@ -31,7 +31,6 @@ class Image(Table):
 
 class Template(Table):
     json = TextField(default='{"width": 500, "height": 700, "color": "#ffffff", "entities": []}')
-    imagemagick = TextField(null=True)
     brand = ForeignKeyField(Brand)
     metal_type = ForeignKeyField(MetalType)
     product_subtype = ForeignKeyField(ProductSubtype)

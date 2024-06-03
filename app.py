@@ -26,33 +26,45 @@ def hello():
   return render_template('index.html')
 
 
-
-def generate_cmd_by_image(entity: dict):
+def generate_cmd_by_image(entity: dict, result_path):
 
   if entity['type'] == 'image':
     try:
-      img_name = os.path.join('images', f'{int(entity["id"])}.png')
+      image_path = os.path.join('images', f'{int(entity["id"])}.png')
     except:
-      img_name = os.path.join('image', str(entity["id"]))
+      image_path = os.path.join('image', str(entity["id"]))
   elif entity['type'] == 'product':
-    img_name = os.path.join('products', f'{int(entity["id"])}.png')
+    image_path = os.path.join('products', f'{int(entity["id"])}.png')
 
-  img_name = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
+  image_path = os.path.join(os.getcwd(), image_path).replace("\\", "\\\\")
 
-  cmd = f'( "{img_name}" -resize {entity["width"]}x{entity["height"]} -geometry +{entity["x"]}+{entity["y"]} ) '
-  # cmd += '-draw "image over '
+  shadow = '-shadow  80x3+5+5' if not entity.get("shadow", False) else ''
+  size = f'{entity["width"]}x{entity["height"]}'
+  loc = f'+{entity["x"]}+{entity["y"]}'
 
-  # cmd += f'{entity["x"]},{entity["y"]} '
-  # cmd += f'{entity["width"]},{entity["height"]} '
-  # cmd += f"'mpr:shadow{entity['x']}{entity['y']}'\" ) -write mpr:shadow{entity['x']}{entity['y']} ) +swap -background none -layers merge +repage "
-  # p = os.path.join(os.getcwd(), img_name).replace("\\", "\\\\")
-  # cmd += f'\'{p}\'" '
+  tmp_path = 'tmp.png'
 
-  return cmd
+  cmd = f'magick "{image_path}" -resize {size} {shadow} "{tmp_path}"'
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd)
 
-def generate_cmd_by_text(entity: dict):
-    return f'-font {entity["font"]} -pointsize {entity["fontSize"]} -fill "{entity["color"]}" -annotate +{entity["x"]}+{entity["y"]} "{entity["text"]}" '
+  cmd = f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd)
 
+  cmd = f'magick "{result_path}" -colorspace sRGB "{image_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd)
+
+def generate_cmd_by_text(entity: dict, result_path):
+  font = entity["font"]
+  fontSize = entity["fontSize"]
+  color = entity["color"]
+  loc = f'+{entity["x"]}+{entity["y"]}'
+  text = entity["text"]
+  cmd = f'magick "{result_path}" -font {font} -pointsize {fontSize} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd)
 
 def generate_template(template: Template):
 
@@ -62,25 +74,20 @@ def generate_template(template: Template):
   path = os.path.join('projects', f'{template.id}')
   if not os.path.exists(path):
     os.mkdir(path)
+    os.mkdir(os.path.join(path, 'tmp'))
 
 
   params: dict = json.loads(template.json)
-  cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} '
-
-  for entity in params['entities']:
-    
-    if entity['type'] in ['image', 'product']:
-      cmd += generate_cmd_by_image(entity)
-    elif entity['type'] == 'text':
-      cmd += generate_cmd_by_text(entity)
-
-
-  
-  cmd += "-layers merge +repage "
-  cmd += '"' + os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\") + '"'
+  result_path = os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\")
+  cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} {result_path}'
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd)
-  return cmd
+
+  for entity in params['entities']:
+    if entity['type'] in ['image', 'product']:
+      generate_cmd_by_image(entity, result_path)
+    elif entity['type'] == 'text':
+      generate_cmd_by_text(entity, result_path)
 
 
 
@@ -173,8 +180,8 @@ def get_template(template_id):
       if entity['type'] == 'image' and 'image' in entity:
         del entity['image']
     template.json = str(request.json).replace("'",'"')
-    template.imagemagick = None
     template.save()
+    generate_template(template)
   
   if request.method == 'DELETE':
     template.delete_instance()
@@ -288,11 +295,6 @@ def get_template_image(template_id):
   template = Template.get_or_none(id=template_id)
   if template is None:
     return jsonify({'error': 'Шаблон не найден'}), 400
-
-  if template.imagemagick is None:
-    cmd = generate_template(template)
-    template.imagemagick = cmd
-    template.save()
 
   return send_file(
     os.path.join(os.getcwd(), 'projects', f'{template.id}', 'result.png'),
