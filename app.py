@@ -52,7 +52,11 @@ def generate_cmd_by_image(entity: dict, result_path):
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd)
 
-  cmd = f'magick "{result_path}" -colorspace sRGB "{image_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
+  cmd = f'magick "{image_path}" -resize {size} "{tmp_path}"'
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd)
+
+  cmd = f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd)
 
