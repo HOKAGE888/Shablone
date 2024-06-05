@@ -149,8 +149,43 @@ body {
     clear: both;
     line-height: 50px;
     margin-right: 15px;
-
 }
+
+input[type="checkbox"] {
+    position: relative;
+    width: 50px;
+    height: 25px;
+    -webkit-appearance: none;
+    outline: none;
+    background: #c6c6c6;
+    border-radius: 25px;
+    transition: .5s;
+    box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+    cursor: pointer;
+  }
+  
+  /* input:checked[type="checkbox"] {
+    background: #40e551
+  } */
+  
+  input[type="checkbox"]:before {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    top: 0;
+    left: 0;
+    background: #fff;
+    transition: .5s;
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+
+  }
+  
+  input:checked[type="checkbox"]:before {
+    left: 25px;
+  }
 
 
 .property_element{
