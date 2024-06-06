@@ -1,4 +1,4 @@
-from peewee import SqliteDatabase, Model, TextField, ForeignKeyField, BlobField
+from peewee import SqliteDatabase, Model, TextField, ForeignKeyField
 
 db = SqliteDatabase('db.db')
 
@@ -26,17 +26,14 @@ class ProductSubtype(Table):
     product_type = ForeignKeyField(ProductType)
 
 
-class Image(Table):
-    pass
-
 class Template(Table):
     json = TextField(default='{"width": 500, "height": 700, "color": "#ffffff", "entities": []}')
     brand = ForeignKeyField(Brand)
     metal_type = ForeignKeyField(MetalType)
     product_subtype = ForeignKeyField(ProductSubtype)
 
-
-
+class Image(Table):
+    pass
 
 class Product(Table):
     product_subtype = ForeignKeyField(ProductSubtype)

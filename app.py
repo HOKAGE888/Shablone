@@ -1,3 +1,4 @@
+import PIL.Image
 from flask import Flask, request, render_template, abort, jsonify, send_file
 from models import Brand, ProductSubtype, ProductType, Template, Image, MetalType, Product
 import os
@@ -6,6 +7,7 @@ import subprocess
 import requests
 import shutil
 from flask import json
+import PIL
 
 json.provider.DefaultJSONProvider.ensure_ascii = False
 app = Flask(__name__)
@@ -25,6 +27,16 @@ def edit():
 def hello():
   return render_template('index.html')
 
+def run_cmd(cmd):
+  print(f"\033[96m{cmd}\033[0m")
+  subprocess.check_output(cmd, shell=True)
+
+def reset_metadata(image_path):
+  image = PIL.Image.open(image_path)
+  data = list(image.getdata())
+  image_without_metadata = PIL.Image.new(image.mode, image.size)
+  image_without_metadata.putdata(data)
+  image_without_metadata.save(image_path, format="PNG", optimize=True, quality=95)
 
 def generate_cmd_by_image(entity: dict, result_path):
 
@@ -44,21 +56,17 @@ def generate_cmd_by_image(entity: dict, result_path):
 
   tmp_path = 'tmp.png'
 
-  cmd = f'magick "{image_path}" -resize {size} {shadow} "{tmp_path}"'
-  print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
+  # Отрисовка тени
+  run_cmd(f'copy "{image_path}" "{tmp_path}"')
+  reset_metadata(tmp_path)
+  run_cmd(f'magick "{tmp_path}" -resize {size}\! {shadow} "{tmp_path}"')
+  run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"')
 
-  cmd = f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
-  print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
-
-  cmd = f'magick "{image_path}" -resize {size} "{tmp_path}"'
-  print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
-
-  cmd = f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"'
-  print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
+  # Отрисовка изображения
+  run_cmd(f'copy "{image_path}" "{tmp_path}"')
+  reset_metadata(tmp_path)
+  run_cmd(f'magick "{tmp_path}" -resize {size}\! "{tmp_path}"')
+  run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"')
 
 def generate_cmd_by_text(entity: dict, result_path):
   font = entity["font"]
@@ -68,7 +76,7 @@ def generate_cmd_by_text(entity: dict, result_path):
   text = entity["text"]
   cmd = f'magick "{result_path}" -font {font} -pointsize {fontSize} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
   print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
+  subprocess.check_output(cmd, shell=True)
 
 def generate_template(template: Template):
 
@@ -85,7 +93,7 @@ def generate_template(template: Template):
   result_path = os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\")
   cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} {result_path}'
   print(f"\033[96m{cmd}\033[0m")
-  subprocess.check_output(cmd)
+  subprocess.check_output(cmd, shell=True)
 
   for entity in params['entities']:
     if entity['type'] in ['image', 'product']:
