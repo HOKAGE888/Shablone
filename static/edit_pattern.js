@@ -167,6 +167,14 @@ window.onload = function(){
         }
     });
 
+    document.getElementById('image-shadow').addEventListener('input', (event) => {
+        if (selectedIndex !== -1) {
+            console.log(event.target.checked)
+            canvas_data.entities[selectedIndex].shadow = event.target.checked;
+            drawObjects();
+        }
+    });
+
 
     // при опускании ЛКМ на холсте
     canvas.addEventListener('mousedown', (event) => {
@@ -398,13 +406,43 @@ function fetchData(url, callback) {
         .catch(error => console.error('Ошибка загрузки данных:', error));
 }
 
+function onShadow(){
+    // Устанавливаем параметры тени
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // Цвет тени (черный с прозрачностью)
+    ctx.shadowBlur = 20; // Радиус размытия тени
+    ctx.shadowOffsetX = 5; // Смещение тени по оси X
+    ctx.shadowOffsetY = 5; // Смещение тени по оси Y
+}
+
+function offShadow(){
+    // Устанавливаем параметры тени
+    ctx.shadowColor = 'rgba(0, 0, 0, 0)'; // Цвет тени (черный с прозрачностью)
+    ctx.shadowBlur = 0 // Радиус размытия тени
+    ctx.shadowOffsetX = 0; // Смещение тени по оси X
+    ctx.shadowOffsetY = 0; // Смещение тени по оси Y
+}
+
 function drawImage(entity, index){
     if ('image' in entity){
+        if ('shadow' in entity && entity['shadow']){
+            onShadow();
+        }
+
         ctx.drawImage(entity.image, entity.x, entity.y, entity.width, entity.height);
+
+        if ('shadow' in entity && entity['shadow']){
+            offShadow();
+        }
     }else{
         const image = new Image();
         image.onload = function(){
+            if ('shadow' in entity && entity['shadow']){
+                onShadow();
+            }
             ctx.drawImage(image, entity.x, entity.y, entity.width, entity.height);
+            if ('shadow' in entity && entity['shadow']){
+                offShadow();
+            }
             entity['image'] = image
         }
         image.src = `http://${hostname}:${port}/${entity.url}`;

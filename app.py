@@ -49,18 +49,18 @@ def generate_cmd_by_image(entity: dict, result_path):
     image_path = os.path.join('products', f'{int(entity["id"])}.png')
 
   image_path = os.path.join(os.getcwd(), image_path).replace("\\", "\\\\")
-
-  shadow = '-shadow  80x3+5+5' if not entity.get("shadow", False) else ''
+  tmp_path = 'tmp.png'
   size = f'{entity["width"]}x{entity["height"]}'
   loc = f'+{entity["x"]}+{entity["y"]}'
 
-  tmp_path = 'tmp.png'
+  if entity.get("shadow", False):
 
-  # Отрисовка тени
-  run_cmd(f'copy "{image_path}" "{tmp_path}"')
-  reset_metadata(tmp_path)
-  run_cmd(f'magick "{tmp_path}" -resize {size}\! {shadow} "{tmp_path}"')
-  run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"')
+    # Отрисовка тени
+    run_cmd(f'copy "{image_path}" "{tmp_path}"')
+    reset_metadata(tmp_path)
+    radius = 10
+    run_cmd(f'magick "{tmp_path}" -resize {size}\!  -background none -shadow 50x{radius}+0+0 "{tmp_path}"')
+    run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry +{entity["x"]-radius-5}+{entity["y"]-radius-5} -composite "{result_path}"')
 
   # Отрисовка изображения
   run_cmd(f'copy "{image_path}" "{tmp_path}"')
@@ -88,8 +88,9 @@ def generate_template(template: Template):
     os.mkdir(path)
     os.mkdir(os.path.join(path, 'tmp'))
 
-
-  params: dict = json.loads(template.json)
+  json_text = template.json.replace('True', 'true').replace('False', 'false')
+  print(json_text)
+  params: dict = json.loads(json_text)
   result_path = os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\")
   cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} {result_path}'
   print(f"\033[96m{cmd}\033[0m")
@@ -104,7 +105,6 @@ def generate_template(template: Template):
 
 
 # AAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIIIIIII
-
 
 
 
@@ -191,7 +191,7 @@ def get_template(template_id):
     for entity in request.json['entities']:
       if entity['type'] == 'image' and 'image' in entity:
         del entity['image']
-    template.json = str(request.json).replace("'",'"')
+    template.json = str(request.json).replace("'",'"').replace('True', 'true').replace('False', 'false')
     template.save()
     generate_template(template)
   
