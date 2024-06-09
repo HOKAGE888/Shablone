@@ -164,9 +164,14 @@ input[type="checkbox"] {
     cursor: pointer;
   }
   
-  /* input:checked[type="checkbox"] {
-    background: #40e551
-  } */
+  input:checked[type="checkbox"]::before {
+    background: #545657;
+    border: 1px solid #ffffff;
+  }
+
+  input:checked[type="checkbox"] {
+    background: #ffffff;
+  }
   
   input[type="checkbox"]:before {
     content: '';

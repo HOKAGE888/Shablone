@@ -107,7 +107,6 @@ def generate_template(template: Template):
 
 
 
-
 @app.route('/api/productsubtype/', methods=['GET'])
 def get_product_subtypes():
   product_subtypes = ProductSubtype.filter()
