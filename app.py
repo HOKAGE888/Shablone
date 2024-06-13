@@ -92,7 +92,7 @@ def generate_template(template: Template):
   print(json_text)
   params: dict = json.loads(json_text)
   result_path = os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\")
-  cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} {result_path}'
+  cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} "{result_path}"'
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd, shell=True)
 
