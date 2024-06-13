@@ -59,13 +59,13 @@ def generate_cmd_by_image(entity: dict, result_path):
     run_cmd(f'copy "{image_path}" "{tmp_path}"')
     reset_metadata(tmp_path)
     radius = 10
-    run_cmd(f'magick "{tmp_path}" -resize {size}\!  -background none -shadow 50x{radius}+0+0 "{tmp_path}"')
+    run_cmd(f'magick "{tmp_path}" -resize {size}\\!  -background none -shadow 50x{radius}+0+0 "{tmp_path}"')
     run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry +{entity["x"]-radius-5}+{entity["y"]-radius-5} -composite "{result_path}"')
 
   # Отрисовка изображения
   run_cmd(f'copy "{image_path}" "{tmp_path}"')
   reset_metadata(tmp_path)
-  run_cmd(f'magick "{tmp_path}" -resize {size}\! "{tmp_path}"')
+  run_cmd(f'magick "{tmp_path}" -resize {size}\\! "{tmp_path}"')
   run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"')
 
 def generate_cmd_by_text(entity: dict, result_path):
@@ -275,15 +275,20 @@ def get_template_zip(template_id):
   
   for product in products:
     response = requests.get(product.url)
+    print(response.status_code)
     if response.status_code != 200:
       return jsonify({'error': f'Не удалось скачать {product.url}'}), 404
     
     image_path = os.path.join(os.getcwd(), 'products', f'{product.id}.png')
     with open(image_path, 'wb') as file:
+      print(image_path)
       file.write(response.content)
     
     entity['id'] = product.id
     template.json = str(params).replace("'",'"')
+
+    product_path = os.path.join('projects', f'{template.id}')
+    shutil.rmtree(product_path)
 
     generate_template(template)
     rename_file(

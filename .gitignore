@@ -164,3 +164,5 @@ projects
 images/*
 tmp.png
 output.png
+.vscode/*
+images/*
