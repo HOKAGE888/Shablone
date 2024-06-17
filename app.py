@@ -74,7 +74,8 @@ def generate_cmd_by_text(entity: dict, result_path):
   color = entity["color"]
   loc = f'+{entity["x"]}+{entity["y"]}'
   text = entity["text"]
-  cmd = f'magick "{result_path}" -font {font} -pointsize {fontSize} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
+  weight = f'-stroke "{color}" -strokewidth 1' if entity["fontWeight"] == 'bold' else ''
+  cmd = f'magick "{result_path}" -font {font} -pointsize {fontSize} {weight} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd, shell=True)
 

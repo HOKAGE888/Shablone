@@ -107,6 +107,7 @@ window.onload = function(){
     document.getElementById('font-weight').addEventListener('change', (event) => {
         if (selectedIndex !== -1) {
             canvas_data.entities[selectedIndex].fontWeight = event.target.value;
+            console.log(event.target.value);
             drawObjects();
         }
     });
