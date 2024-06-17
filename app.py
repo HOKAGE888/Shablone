@@ -111,7 +111,7 @@ def generate_template(template: Template):
 
 @app.route('/api/productsubtype/', methods=['GET'])
 def get_product_subtypes():
-  product_subtypes = ProductSubtype.filter()
+  product_subtypes = ProductSubtype.filter(**request.args)
   result = {'count':product_subtypes.count(), 'entities':[]}
   for item in product_subtypes:
     result['entities'].append({

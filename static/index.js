@@ -1,5 +1,6 @@
 const hostname = window.location.hostname;
 const port = window.location.port;
+const apiUrl = `http://${hostname}:${port}/api/`;
 
 window.onload = function(){
     console.log('window.onload');
@@ -43,8 +44,13 @@ window.onload = function(){
     // Функция для заполнения выпадающего списка
     function loadComboBox(jsonData, elementId) {
         const dropdown = document.getElementById(elementId);
+        
         // Очистка списка перед добавлением новых элементов
-        // dropdown.innerHTML = '';
+        dropdown.innerHTML = '';
+        const empty = document.createElement('option');
+        empty.textContent = '';
+        dropdown.appendChild(empty);
+        
         // Добавление элементов из JSON в список
         jsonData.entities.forEach(entity => {
             const option = document.createElement('option');
@@ -102,41 +108,46 @@ window.onload = function(){
         });
     }
 
-    function getTemplates(callback){
-    params = [];
-    const filters = ['brand', 'product_subtype', 'metal_type'];
-    filters.forEach(filter =>{
-        const combobox = document.getElementById(`${filter}_filter`);
-        if(combobox.value){
-        params.push(`${filter}_id=${combobox.value}`);
-        }
-    });
-    let url = `http://${hostname}:${port}/api/template/`
-    if(params.length > 0)
-        url += `?${params.join('&')}`
-
-    console.log(url)
-    fetch(url)
-        .then(response => response.json())
-        .then(data => callback(data))
-        .catch(error => console.error('Ошибка загрузки данных:', error));
-    }
-
-    // URL API
-    const apiUrl = `http://${hostname}:${port}/api/`;
-
-
-
     // Код для обработки нажатия на кнопку закрытия модального окна
     document.getElementById('closeModalBtn').addEventListener('click', function() {
         document.getElementById('myModal').style.display = 'none';
     });
 
+    function getTemplates(callback){
+        params = [];
+        const filters = ['brand', 'product_subtype', 'metal_type'];
+        filters.forEach(filter =>{
+            const combobox = document.getElementById(`${filter}_filter`);
+            if(combobox.value){
+            params.push(`${filter}_id=${combobox.value}`);
+            }
+        });
+        let url = `http://${hostname}:${port}/api/template/`
+        if(params.length > 0)
+            url += `?${params.join('&')}`
 
-    
+        console.log(url)
+        fetch(url)
+            .then(response => response.json())
+            .then(data => callback(data))
+            .catch(error => console.error('Ошибка загрузки данных:', error));
+        }    
+
+
+    function loadProductSubType(event){
+        const product_type = event.target.value;
+        if (product_type == ""){
+            fetchData(`${apiUrl}productsubtype`, loadComboBox, 'product_subtype_filter');
+        }
+        else{
+            fetchData(`${apiUrl}productsubtype?product_type=${product_type}`, loadComboBox, 'product_subtype_filter');
+        }
+    }
+
+
     document.getElementById('brand_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
     document.getElementById('product_subtype_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
-    document.getElementById('product_type_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
+    document.getElementById('product_type_filter').addEventListener('change', (event) => { loadProductSubType(event); });
     document.getElementById('metal_type_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
 
     // Загрузка данных для страницы
