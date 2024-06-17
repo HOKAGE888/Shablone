@@ -47,11 +47,6 @@ window.onload = function(){
         canvas_data.color = document.getElementById('canvas-color').value;
         drawObjects();
     });
-
-    // при клике на холст
-    canvas.addEventListener('click', (event) => {
-       
-    });
     
     // при изменении текста текста
     document.getElementById('text-input').addEventListener('input', (event) => {
@@ -236,6 +231,8 @@ window.onload = function(){
                 document.getElementById('image-y').value = entity.y;
                 document.getElementById('image-height').value = entity.height;
                 document.getElementById('image-width').value = entity.width;
+                console.log(entity.shadow);
+                document.getElementById('image-shadow').checked = entity.shadow;
             }
 
             dragStartX = mouseX;
