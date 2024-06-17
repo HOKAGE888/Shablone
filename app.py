@@ -271,6 +271,9 @@ def get_template_zip(template_id):
 
   params: dict = json.loads(template.json)
   entity = get_product_from_entities(params['entities'])
+  if entity is None:
+    return jsonify({'error': 'Для генерации изображений требуется разместить на холсте изделие!'}), 404
+  
   entity['type'] = 'product'
   project_path = os.path.join(os.getcwd(), 'projects', f'{template.id}')
   

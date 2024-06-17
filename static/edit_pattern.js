@@ -322,7 +322,10 @@ window.onload = function(){
         fetch(`http://${hostname}:${port}/api/template/${template_id}/zip`)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+                    return response.json().then(errorData => {
+                        alert(errorData.error);
+                        throw new Error('Network response was not ok: ' + errorData.error);
+                    });
                 }
                 return response.blob(); // Получаем Blob из ответа
             })
