@@ -317,8 +317,12 @@ def get_template_image(template_id):
   if template is None:
     return jsonify({'error': 'Шаблон не найден'}), 400
 
+  path = os.path.join(os.getcwd(), 'projects', f'{template.id}', 'result.png')
+  if not os.path.exists(path):
+    generate_template(template=template)
+
   return send_file(
-    os.path.join(os.getcwd(), 'projects', f'{template.id}', 'result.png'),
+    path_or_file=path,
     mimetype='image/png', 
     as_attachment=False
   )
