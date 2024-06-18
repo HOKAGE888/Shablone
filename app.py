@@ -276,10 +276,11 @@ def get_template_zip(template_id):
   
   entity['type'] = 'product'
   project_path = os.path.join(os.getcwd(), 'projects', f'{template.id}')
-  
+  shutil.rmtree(project_path)
+
   for product in products:
     response = requests.get(product.url)
-    print(response.status_code)
+
     if response.status_code != 200:
       return jsonify({'error': f'Не удалось скачать {product.url}'}), 404
     
@@ -290,9 +291,6 @@ def get_template_zip(template_id):
     
     entity['id'] = product.id
     template.json = str(params).replace("'",'"')
-
-    product_path = os.path.join('projects', f'{template.id}')
-    shutil.rmtree(product_path)
 
     generate_template(template)
     rename_file(
