@@ -134,21 +134,18 @@ window.onload = function(){
         }    
 
 
-    function loadProductSubType(event){
+    function loadProductSubType(event, element_id){
         const product_type = event.target.value;
-        if (product_type == ""){
-            fetchData(`${apiUrl}productsubtype`, loadComboBox, 'product_subtype_filter');
-        }
-        else{
-            fetchData(`${apiUrl}productsubtype?product_type=${product_type}`, loadComboBox, 'product_subtype_filter');
-        }
+        const request = `${apiUrl}productsubtype` + (product_type == "" ? "" : `?product_type=${product_type}`);
+        fetchData(request, loadComboBox, element_id);
     }
-
 
     document.getElementById('brand_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
     document.getElementById('product_subtype_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
-    document.getElementById('product_type_filter').addEventListener('change', (event) => { loadProductSubType(event); });
+    document.getElementById('product_type_filter').addEventListener('change', (event) => { loadProductSubType(event, 'product_subtype_filter'); });
     document.getElementById('metal_type_filter').addEventListener('change', (event) => { getTemplates(loadTemplates); });
+
+    document.getElementById('producttype').addEventListener('change', (event) => { loadProductSubType(event,'productsubtype'); });
 
     // Загрузка данных для страницы
 
