@@ -8,6 +8,9 @@ import requests
 import shutil
 from flask import json
 import PIL
+from fonts.font import ensure_fonts_installed, FONT_LIST
+
+
 
 json.provider.DefaultJSONProvider.ensure_ascii = False
 app = Flask(__name__)
@@ -366,5 +369,7 @@ if __name__ == '__main__':
       if not os.path.exists(path):
         os.mkdir(path)
   
+
+  ensure_fonts_installed(FONT_LIST)
 
   app.run(debug=True)
