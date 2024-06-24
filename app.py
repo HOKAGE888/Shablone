@@ -8,7 +8,7 @@ import requests
 import shutil
 from flask import json
 import PIL
-from fonts.font import ensure_fonts_installed, FONT_LIST
+from fonts import font
 
 
 
@@ -72,13 +72,13 @@ def generate_cmd_by_image(entity: dict, result_path):
   run_cmd(f'magick "{result_path}" -colorspace sRGB "{tmp_path}" -colorspace sRGB -geometry {loc} -composite "{result_path}"')
 
 def generate_cmd_by_text(entity: dict, result_path):
-  font = entity["font"]
+  font_ttf = font.get_path(entity["font"])
   fontSize = entity["fontSize"]
   color = entity["color"]
   loc = f'+{entity["x"]}+{entity["y"]}'
   text = entity["text"]
   weight = f'-stroke "{color}" -strokewidth 1' if entity["fontWeight"] == 'bold' else ''
-  cmd = f'magick "{result_path}" -font {font} -pointsize {fontSize} {weight} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
+  cmd = f'magick "{result_path}" -font "{font_ttf}" -pointsize {fontSize} {weight} -fill "{color}" -annotate {loc} "{text}" "{result_path}"'
   print(f"\033[96m{cmd}\033[0m")
   subprocess.check_output(cmd, shell=True)
 
@@ -93,7 +93,7 @@ def generate_template(template: Template):
     os.mkdir(os.path.join(path, 'tmp'))
 
   json_text = template.json.replace('True', 'true').replace('False', 'false')
-  print(json_text)
+  print(f"\033[95m{json_text}\033[0m")
   params: dict = json.loads(json_text)
   result_path = os.path.join(os.getcwd(), path, "result.png").replace("\\", "\\\\")
   cmd = f'magick -size {params["width"]}x{params["height"]} xc:{params["color"]} "{result_path}"'
@@ -114,6 +114,7 @@ def generate_template(template: Template):
 
 @app.route('/api/productsubtype/', methods=['GET'])
 def get_product_subtypes():
+  '''Получает подтипы по указанному фильтру'''
   product_subtypes = ProductSubtype.filter(**request.args)
   result = {'count':product_subtypes.count(), 'entities':[]}
   for item in product_subtypes:
@@ -126,6 +127,7 @@ def get_product_subtypes():
 
 @app.route('/api/producttype/', methods=['GET'])
 def get_product_types():
+  '''Получает типы по указанному фильтру'''
   product_types = ProductType.filter()
   result = {'count':product_types.count(), 'entities':[]}
   for item in product_types:
@@ -138,6 +140,7 @@ def get_product_types():
 
 @app.route('/api/brand/', methods=['GET'])
 def get_brands():
+  '''Получает бренды по указанному фильтру'''
   brands = Brand.filter()
   result = {'count':brands.count(), 'entities':[]}
   for item in brands:
@@ -149,6 +152,7 @@ def get_brands():
 
 @app.route('/api/metaltype/', methods=['GET'])
 def get_metaltypes():
+  '''Получает тип металла по указанному фильтру'''
   metal_types = MetalType.filter()
   result = {'count':metal_types.count(), 'entities':[]}
   for item in metal_types:
@@ -368,8 +372,5 @@ if __name__ == '__main__':
   for path in ['images', 'projects', 'products']:
       if not os.path.exists(path):
         os.mkdir(path)
-  
-
-  ensure_fonts_installed(FONT_LIST)
 
   app.run(debug=True)

@@ -11,6 +11,20 @@ FONT_LIST = [
     "montserrat.ttf",
 ]
 
+FONT_DATA = {
+    "Arial":"arial.ttf",
+    "Times New Roman":"times.ttf",
+    "Courier New":"cour.ttf",
+    "Verdana":"verdana.ttf",
+    "Montserrat":"montserrat.ttf",
+}
+
+def get_path(font_name: str):
+    """Получить путь до шрифта"""
+    file_name = FONT_DATA.get(font_name, None)
+    return os.path.join(os.getcwd(), 'fonts', file_name).replace("\\", "\\\\") if file_name else None
+
+
 def install_font_from_file(font_file):
     """Устанавливает шрифт из файла и регистрирует его в системе"""
     try:
